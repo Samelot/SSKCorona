@@ -51,8 +51,8 @@ local function calcMeasurementSpacing()
 	_G.bottom 			= h + unusedHeight/2
 
 
-	_G.w 				= round(fullw)
-	_G.h 				= round(fullh)
+	_G.w 				= round(w)
+	_G.h 				= round(h)
 	_G.left				= round(left)
 	_G.top				= round(top)
 	_G.right			= round(right)

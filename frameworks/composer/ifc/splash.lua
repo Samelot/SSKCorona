@@ -10,17 +10,33 @@ local scene    		= composer.newScene()
 --								LOCALS								--
 ----------------------------------------------------------------------
 -- Variables
-local w = display.contentWidth
-local h = display.contentHeight
-local centerX = display.contentCenterX
-local centerY = display.contentCenterY
-
+local timerHandle
+local back
+local waitTime = 2000
 
 -- Forward Declarations
-local goToMainMenu
+local onMainMenu
 
 
 -- Useful Localizations
+-- SSK
+--
+local newCircle 	= ssk.display.newCircle
+local newRect 		= ssk.display.newRect
+local newImageRect 	= ssk.display.newImageRect
+local newAngleLine 	= ssk.display.newAngleLine
+local easyIFC   	= ssk.easyIFC
+local oleft 		= ssk.misc.oleft
+local oright 		= ssk.misc.oright
+local otop 			= ssk.misc.otop
+local obottom		= ssk.misc.obottom
+local isInBounds    = ssk.easyIFC.isInBounds
+local persist 		= ssk.persist
+local isValid 		= display.isValid
+local easyFlyIn 	= easyIFC.easyFlyIn
+
+-- Corona & Lua
+--
 local mAbs              = math.abs
 local mRand             = math.random
 local mDeg              = math.deg
@@ -50,39 +66,30 @@ local pairs             = pairs
 function scene:create( event )
 	local sceneGroup = self.view
 
+	local layers = ssk.display.quickLayers( sceneGroup, "underlay", "content", "overlay" )
+
 	-- Create a simple background
-	local back = display.newImageRect( sceneGroup, "images/protoBack.png", 380, 570 )
-	back.x = centerX
-	back.y = centerY
-	if(w>h) then back.rotation = 90 end
-
-	-- Create a label showing which scene this is
-	local label = display.newEmbossedText( sceneGroup, "Splash", centerX, 40, native.systemFont, 60 )
-	label:setFillColor( 0xCC/255, 1, 1  )
-	local color = 
-	{
-	    highlight = { r=1, g=1, b=1 },
-	    shadow = { r=0, g=1, b=0.3 }
-	}
-	label:setEmbossColor( color )
+	back = newImageRect( layers.underlay, centerX, centerY, 
+		                       "images/protoBack.png",
+		                       { w = 380, h = 570, rotation = (w>h) and 90 or 0 } )
 
 
+	-- Create a basic label
+	local tmp = easyIFC:quickLabel( layers.content, "Splash", centerX, centerY - 70, gameFont2, 42, hexcolor("#2B547E")  )
 
-	-- Automatically Go to main menu in 2 seconds 
-	--
-	local timerHandle = timer.performWithDelay( 2000, goToMainMenu )
+
+	-- Create a basic push button
+	easyIFC:presetPush( layers.content, "default", centerX, centerY, 80, 40, "Push Me", onMainMenu )
 
 	-- If user touches back, go to main menu early.
 	--
 	back.touch = function( self, event )
 		if(event.phase == "ended") then
-			timer.cancel(timerHandle)
-			goToMainMenu()
+			onMainMenu()
 		end
 		return true
 	end
 	back:addEventListener( "touch" )	
-
 end
 
 ----------------------------------------------------------------------
@@ -94,6 +101,10 @@ end
 ----------------------------------------------------------------------
 function scene:didEnter( event )
 	local sceneGroup = self.view
+
+	-- Automatically Go to main menu in 2 seconds 
+	--
+	timerHandle = timer.performWithDelay( waitTime, onMainMenu )
 end
 
 ----------------------------------------------------------------------
@@ -116,10 +127,17 @@ end
 ----------------------------------------------------------------------
 --				FUNCTION/CALLBACK DEFINITIONS						--
 ----------------------------------------------------------------------
-goToMainMenu = function()
+onMainMenu = function( event )
+	if( event and event.target ) then print( "Pushed button labeled: " .. event.target:getText() ) end
+
+	if( timerHandle) then
+		timer.cancel(timerHandle)
+		timerHandle = nil 
+	end
+
 	local options =
 	{
-		effect = "slideLeft", -- See list here: http://docs.coronalabs.com/daily/api/library/composer/gotoScene.html
+		effect = "fromRight", -- See list here: http://docs.coronalabs.com/daily/api/library/composer/gotoScene.html
 		time = 500,
 		params =
 		{
@@ -128,6 +146,7 @@ goToMainMenu = function()
 		}
 	}
 	composer.gotoScene( "ifc.mainMenu", options  )	
+	--]]
 end
 
 

@@ -12,7 +12,7 @@ sampleMgr.autoUpdate = false
 function sampleMgr.discover()
 	samplesDB = table.load( "samplesDB.json", system.ResourceDirectory ) or  {}
 
-	if( onSimulator ) then
+	if( onSimulator and sampleMgr.autoUpdate ) then
 		local rgFiles 		= ssk.rgFiles
 		local files = rgFiles.getFilesInDirectory("samples")
 

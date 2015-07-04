@@ -14,7 +14,7 @@ settings = {
 		default = "landscapeLeft",
 		supported = { "landscapeRight", "landscapeLeft" },
 	},
---[[
+----[[
 	plugins =
    	{
 
@@ -42,9 +42,9 @@ settings = {
 		-- =================================
 
 		--["plugin.adbuddiz"] = { publisherId = "com.adbuddiz", }, -- adBuddiz
-		["plugin.google.play.services"] = { publisherId = "com.coronalabs" }, -- adMob-v2
-		["CoronaProvider.ads.iads"] = { publisherId = "com.coronalabs", supportedPlatforms = { iphone = true }, }, -- iAds		 		
- 		["CoronaProvider.ads.vungle"] = { publisherId = "com.vungle", }, -- Vungle
+		--["plugin.google.play.services"] = { publisherId = "com.coronalabs" }, -- adMob-v2
+		--["CoronaProvider.ads.iads"] = { publisherId = "com.coronalabs", supportedPlatforms = { iphone = true }, }, -- iAds		 		
+ 		--["CoronaProvider.ads.vungle"] = { publisherId = "com.vungle", }, -- Vungle
  		
  		--["CoronaProvider.ads.crossinstall"] = { publisherId = "com.crossinstall" }, -- Cross Install
 
@@ -75,6 +75,7 @@ settings = {
 		-- =================================
 		-- Social
 		-- =================================
+		["CoronaProvider.native.popup.activity"] = { publisherId = "com.coronalabs", supportedPlatforms = { iphone=true, ["iphone-sim"]=true }, },
 		["CoronaProvider.native.popup.social"] = { publisherId = "com.coronalabs", },
 		--["facebook"] = { publisherId = "com.coronalabs", supportedPlatforms = { iphone = true }, },
 		--["plugin.together"] = { publisherId = "com.playstogether", },

@@ -1,45 +1,27 @@
 -- =============================================================
--- main.lua
+-- Copyright Roaming Gamer, LLC. 2009-2015
 -- =============================================================
+--                              License
+-- =============================================================
+--[[
+    > This example is free to use.
+    > This example is free to edit.
+    > This example is free to use as the basis for a free or commercial game.
+    > This example is free to use as the basis for a free or commercial non-game app.
+    > This example is free to use without crediting the author (credits are still appreciated).
+    > This example is NOT free to sell as a tutorial, or example of making jig saw puzzles.
+    > This example is NOT free to credit yourself with.
+]]
+-- =============================================================
+io.output():setvbuf("no") -- Don't use buffer for console messages
+display.setStatusBar(display.HiddenStatusBar)  -- Hide that pesky bar
 
-----------------------------------------------------------------------
---	1. Requires
-----------------------------------------------------------------------
--- http://docs.coronalabs.com/daily/api/library/composer/index.html
+_G.gameFont = native.systemFont
+
+require "ssk.loadSSK"
+
 local composer 	= require "composer" 
 
-require "scripts.pushButtonClass"
-require "scripts.toggleButtonClass"
-
-
-----------------------------------------------------------------------
---	2. Initialization
-----------------------------------------------------------------------
--- Turn on debug output for composer + Various other settings
---
-composer.isDebug = true
---composer.recycleOnLowMemory = false
---composer.recycleOnSceneChange = true
-
--- Print to console immediately.
---
-io.output():setvbuf("no") 
-
--- Hide that pesky bar
---
-display.setStatusBar(display.HiddenStatusBar)  
-
--- Need multi-touch?  Enable it now.
---
---system.activate("multitouch") 
-
---local physics = require "physics"
---physics.setGravity( 0, 10 )
---physics.setDrawMode( "hybrid" )
-
-
-----------------------------------------------------------------------
--- 3. Execution
-----------------------------------------------------------------------
+--composer.gotoScene( "ifc.template" )
 composer.gotoScene( "ifc.splash" )
 --composer.gotoScene( "ifc.mainMenu" )

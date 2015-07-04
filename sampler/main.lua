@@ -40,3 +40,7 @@ sampleMgr.autoUpdate = false
 --sampleMgr.startIn = "experiments"
 --sampleMgr.startIn = "askEd"
 require "scripts.sampler.menu"
+
+--require "social1"
+--require "borked"
+

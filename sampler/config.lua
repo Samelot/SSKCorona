@@ -7,7 +7,7 @@ application = {
 		--scale = "zoomEven", -- OK
 		--scale = "none", -- No good with Desktop
 		--scale = "adaptive", -- No good with Desktop
-		fps = 30,
+		fps = 60,
         imageSuffix = 
         {
             --["@2x"] = 1.5,
