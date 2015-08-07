@@ -305,6 +305,19 @@ function table.count( src )
 end
 
 -- ==
+--    table.maxIndex( src ) - Determine the maximum index of a sparse table
+-- ==
+function table.maxIndex( src )
+	local high = 0
+	if( not src ) then return high end
+	for k,v in pairs(src) do 
+		if(k>high) then high = k end
+	end
+	return high
+end
+
+
+-- ==
 --    table.count_r( src ) - Counts all entries in table (recursive)
 -- ==
 function table.count_r( src )

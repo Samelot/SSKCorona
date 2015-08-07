@@ -30,7 +30,6 @@ end
 
 local _RGDisplay = {}
 
-
 shallowCopy( require( "ssk.display.arcs" ), _RGDisplay )
 --EFM not working properly right now 
 -- shallowCopy( require( "ssk.display.chain" ), _RGDisplay )
@@ -38,6 +37,5 @@ shallowCopy( require( "ssk.display.extended" ), _RGDisplay )
 shallowCopy( require( "ssk.display.layers" ), _RGDisplay )
 shallowCopy( require( "ssk.display.lines" ), _RGDisplay )
 _G.ssk.display = _RGDisplay
-
 
 return _RGDisplay

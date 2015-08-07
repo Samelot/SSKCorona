@@ -158,6 +158,28 @@ if( ssk.enableExperimental ) then
 		return obj.__hasBody
 	end
 
+	-- ==
+	--		pushDisplayDefault() / popDisplayDefault()- 
+	-- ==
+	local defaultValues = {}
+	function display.pushDisplayDefault( defaultName, newValue )
+		if( not defaultValues[defaultName] ) then defaultValues[defaultName] = {} end
+		local values = defaultValues[defaultName]
+		values[#values+1] = display.getDefault( defaultName )
+		display.setDefault( defaultName, newValue )
+	end
+
+	function display.popDisplayDefault( defaultName )
+		if( not defaultValues[defaultName] ) then defaultValues[defaultName] = {} end
+		local values = defaultValues[defaultName]
+		if(#values == 0) then return end
+
+		local tmp = values[#values]
+		values[#values] = nil
+		display.setDefault( defaultName, tmp )
+	end
+
+
 
 	-- AUTO CLEAN TEST CODE
 	--[[
