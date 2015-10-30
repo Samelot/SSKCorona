@@ -6,7 +6,7 @@ This code-kit has gone through numerous updates and re-orgs as I've tried to mak
 
 If you are capable, inquistive, and brave enough, you can use and learn from SSK.  I believe you'll soon see the merits of using it and like me, never look back.
 
-However, you must have a solid foundation in Lua programming and the Corona SDK APIs before you can truly understand and appreciate SSK.  So, if you're new or inexperienced, do yourself a favor and spend some time learning about Lua an Corona, then come back and give SSK as go.
+However, you must have a solid foundation in Lua programming and the Corona SDK APIs before you can truly understand and appreciate SSK.  So, if you're new or inexperienced, do yourself a favor and spend some time learning about Lua and Corona, then come back and give SSK a go.
 
 
 SSKCorona Parts
