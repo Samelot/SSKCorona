@@ -92,33 +92,6 @@ function math2do.subFast( x1, y1, x2, y2 )
 end
 
 -- ==
---    diff( ... [ , altRet ]) - Calculates the difference of two vectors: <x2, y2> - <x1, y1> == <x2 - x1 , y2 - y1>
--- ==
-function math2do.diff( ... ) -- ( objA, objB [, altRet] ) or ( x1, y1, x2, y2, [, altRet]  )
-	if( type(arg[1]) == "number" ) then
-		local x,y = arg[3] - arg[1], arg[4] - arg[2]
-
-		if(arg[5]) then
-			return { x=x, y=y }
-		else
-			return x,y
-		end
-	else
-		local x,y = arg[2].x - arg[1].x, arg[2].y - arg[1].y
-			
-		if(arg[3]) then
-			return x,y
-		else
-			return { x=x, y=y }
-		end
-	end
-end
-function math2do.diffFast( x1, y1, x2, y2 ) 
-	return x2 - x1, y2 - y1
-end
-
-
--- ==
 --    ssk.math2d.dot( ... ) - Calculates the dot (inner) product of two vectors: <x1, y1> . <x2, y2> == x1 * x2 + y1 * y2
 -- ==
 function math2do.dot( ... ) -- ( objA, objB ) or ( x1, y1, x2, y2 )
@@ -498,7 +471,7 @@ end
 -- center: optional
 math2do.rotateTo = function( point, degrees, center )
 	if (center ~= nil) then
-		return math2do.rotateAboutPoint( point, degrees, center )
+		return rotateAboutPoint( point, degrees, center )
 	else
 		local x, y = point.x, point.y 
 		local theta = math.rad( degrees ) 

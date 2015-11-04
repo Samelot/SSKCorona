@@ -18,7 +18,7 @@
 -- DO NOT MODIFY BELOW (Used In Framework); EXPERTS ONLY
 -- DO NOT MODIFY BELOW (Used In Framework); EXPERTS ONLY
 
-local debugEn = true
+local debugEn = false
 
 
 -- =============================================================
@@ -93,7 +93,7 @@ local function resize( event )
 			calcMeasurementSpacing()			
 		end )
 end
-if( ssk and ssk.__adjustMeasureOnResize ) then
+if( ssk and ssk.__desktopMode ) then
 	Runtime:addEventListener( "resize", calcMeasurementSpacing )
 end
 

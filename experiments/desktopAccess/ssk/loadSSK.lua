@@ -18,13 +18,12 @@
 -- =============================================================
 -- Create ssk global if needed
 _G.ssk = _G.ssk or {}
-ssk.getVersion = function() return "14 OCT 2015" end
+ssk.getVersion = function() return "21 JUL 2015" end
 
 ssk.__measureSSK			= true		-- Show how much memory is used by each module and all of SSK
 ssk.__enableAutoListeners	= true 		-- Enables automatic attachment of event listeners in extended display library
-ssk.enableExperimental		= false 		-- Enables experimental features (turn this off if you run into problems)
-ssk.__desktopMode		 	= true 		-- Running in a 'desktop' app, not mobile.
-ssk.__adjustMeasureOnResize	= true 		-- When resize even occurs adjust screen mesurements.
+ssk.enableExperimental		= true 		-- Enables experimental features (turn this off if you run into problems)
+ssk.__desktopMode		 	= false 	-- Running in a 'desktop' app, not mobile.
 
 -- If measuring, get replacement 'require'
 --
@@ -44,31 +43,7 @@ local_require "ssk.RGCC"
 local_require "ssk.RGEasyKeys"
 local_require "ssk.RGEasyInputs.RGEasyInputs"
 
-local_require "ssk.RGFiles"
-local_require "ssk.actions.RGActions"
-local_require "ssk.RGMisc"
-
-local_require "ssk.RGAndroid"
-
-local_require "ssk.RGPoints" 
-local_require "ssk.RGPersist"
-local_require "ssk.RGEasyBench"
-local_require "ssk.RGMultiscroller"
-
-
-
---
-if(ssk.__enableExperimental) then 
-	local_require "ssk.extras.lazyRequire" 
-end
-
---
--- External Libs/Modules (Written by others and used with credit.)
---
-ssk.GGFile = local_require( "ssk.external.GGFile" ) -- Modified version of GlitchGames' GGFile (added binary copy and move) 
-ssk.wait =  local_require( "ssk.external.wait" ) -- Adapted from Steven Johnson's work (ggcrunchy) https://github.com/ggcrunchy/samples
-ssk.randomlua = local_require "ssk.external.randomlua" -- Various 'math.random' alternatives
-
+local_require "ssk.RGfiles"
 
 -- Meaure Final Cost of SSK (if enabled)
 if( ssk.__measureSSK ) then require("ssk.measureSSK").summary() end
