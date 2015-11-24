@@ -305,7 +305,67 @@ function camera.trackingLooseCircle( trackObj, world, params )
 		display.remove(innerCircle)
 		display.remove(outerCircle)
 	end
+  
 end
+
+
+-- ==
+--		transitioning() - Follows target exactly.
+-- ==
+function camera.transitioning( trackObj, world, params )	
+
+	if( not isValid( world ) ) then return end
+	
+	params = params or {}	
+   local time     = params.time or 250
+   local myEasing = params.easing or easing.linear
+	local lockX    = params.lockX 
+	local lockY    = params.lockY
+	local centered = fnn( params.centered, false)
+
+	local lx = 0
+	local ly = 0
+
+	if( centered ) then
+		if( lockX ) then
+			lx = trackObj.x
+		else
+			lx = centerX
+		end
+
+		if( lockY ) then
+			ly = trackObj.y
+		else
+			ly = centerY
+		end
+	else
+		lx = trackObj.x
+		ly = trackObj.y
+	end
+
+	trackObj.updateCamera = function( event )
+		if( not isValid( world ) ) then 
+			ignore( "enterFrame", world )
+			return 
+		end
+		if( not isValid( trackObj ) ) then 
+			return 
+		end
+		local dx = 0
+		local dy = 0
+		if(not lockX) then dx = trackObj.x - lx end		
+		if(not lockY) then dy = trackObj.y - ly end      
+		if(dx or dy) then	
+         transition.to( world, { x = world.x - dx, y = world.y - dy, time = time, transition = myEasing } )
+			--world:translate(-dx,-dy)
+			lx = trackObj.x
+			ly = trackObj.y
+		end
+		return false
+	end
+	Runtime:addEventListener( "enterFrame", world )
+end
+
 
 ----------------------------------------------------------------------
 --	4. The Module

@@ -18,7 +18,7 @@
 -- DO NOT MODIFY BELOW (Used In Framework); EXPERTS ONLY
 -- DO NOT MODIFY BELOW (Used In Framework); EXPERTS ONLY
 
-local debugEn = true
+local debugEn = false
 
 
 -- =============================================================

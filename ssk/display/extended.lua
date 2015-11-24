@@ -84,7 +84,7 @@ if( not table.dump ) then
 		for n in pairs(theTable) do table.insert(tmp, n) end
 		table.sort(tmp)
 
-		print("\Table Dump:")
+		print("\nTable Dump:")
 		print("-----")
 		if(#tmp > 0) then
 			for i,n in ipairs(tmp) do 		
@@ -140,7 +140,7 @@ local addBehaviors
 -- ==
 --    ssk.display.rect() - Extends display.newRect() by adding visual parameters and physics parameters.
 -- ==
-function displayExtended.rect( group, x, y, visualParams, bodyParams ) --, behaviorsList )
+function displayExtended.rect( group, x, y, visualParams, bodyParams, behaviorsList )
 	group = group or display.currentStage
 	visualParams = visualParams or {}
 
@@ -192,7 +192,7 @@ function displayExtended.rect( group, x, y, visualParams, bodyParams ) --, behav
 		end
 	end
 
-	--EFM if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
+	if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
 	return dObj
 end
 displayExtended.newRect = displayExtended.rect
@@ -200,7 +200,7 @@ displayExtended.newRect = displayExtended.rect
 -- ==
 --    ssk.display.circle() - Extends display.newCircle() by adding visual parameters and physics parameters.
 -- ==
-function displayExtended.circle( group, x, y, visualParams, bodyParams ) --, behaviorsList )
+function displayExtended.circle( group, x, y, visualParams, bodyParams, behaviorsList )
 	group = group or display.currentStage
 	visualParams = visualParams or {}
 
@@ -239,7 +239,7 @@ function displayExtended.circle( group, x, y, visualParams, bodyParams ) --, beh
 		end
 	end
 	
-	--EFM if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
+	if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
 	return dObj
 end
 displayExtended.newCircle = displayExtended.circle
@@ -247,7 +247,7 @@ displayExtended.newCircle = displayExtended.circle
 -- ==
 --    ssk.display.image() - Extends display.newImage() by adding visual parameters and physics parameters.
 -- ==
-function displayExtended.image( group, x, y, imgSrc, visualParams, bodyParams ) --, behaviorsList )
+function displayExtended.image( group, x, y, imgSrc, visualParams, bodyParams, behaviorsList )
 	group = group or display.currentStage
 	visualParams = visualParams or {}
 
@@ -276,7 +276,7 @@ function displayExtended.image( group, x, y, imgSrc, visualParams, bodyParams ) 
 		end
 	end
 
-	--EFM if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
+	if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
 	return dObj
 end
 displayExtended.newImage = displayExtended.image
@@ -289,7 +289,7 @@ displayExtended.newImage = displayExtended.image
 -- ==
 --    ssk.display.imageRect() - Extends display.newImageRect() by adding visual parameters and physics parameters.
 -- ==
-function displayExtended.imageRect( group, x, y, imgSrc, visualParams, bodyParams ) --, behaviorsList )
+function displayExtended.imageRect( group, x, y, imgSrc, visualParams, bodyParams, behaviorsList )
 	group = group or display.currentStage
 	visualParams = visualParams or {}
 
@@ -349,7 +349,7 @@ function displayExtended.imageRect( group, x, y, imgSrc, visualParams, bodyParam
 		end
 	end
 
-	--EFM if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
+	if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
 	return dObj
 end
 displayExtended.newImageRect= displayExtended.imageRect
@@ -358,7 +358,7 @@ displayExtended.newImageRect= displayExtended.imageRect
 -- ==
 --    ssk.display.sprite() - Extends display.newImageRect() by adding visual parameters and physics parameters.
 -- ==
-function displayExtended.sprite( group, x, y, imgSrc, sequenceData, visualParams, bodyParams ) --, behaviorsList )
+function displayExtended.sprite( group, x, y, imgSrc, sequenceData, visualParams, bodyParams, behaviorsList )
 	group = group or display.currentStage
 	visualParams = visualParams or {}
 
@@ -416,7 +416,7 @@ function displayExtended.sprite( group, x, y, imgSrc, sequenceData, visualParams
 		end
 	end
 
-	--EFM if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
+	if(behaviorsList) then addBehaviors(dObj, behaviorsList) end
 
 	visualParams.autoPlay = fnn( visualParams.autoPlay, true )
 
@@ -610,9 +610,9 @@ addBehaviors = function( obj, behaviorsList )
 		local valueType = type(v)
 			
 		if( valueType == "string" ) then
-			ssk.behaviors:attachBehavior(obj, v)
+			ssk.behaviors.manager:attachBehavior(obj, v)
 		elseif( valueType == "table" ) then
-			ssk.behaviors:attachBehavior(obj, v[1], v[2] )
+			ssk.behaviors.manager:attachBehavior(obj, v[1], v[2] )
 		else
 			error("u_prototyping.lua:addBehaviors() => Unknown type: " .. valueType)
 		end
