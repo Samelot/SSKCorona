@@ -20,11 +20,11 @@
 _G.ssk = _G.ssk or {}
 ssk.getVersion = function() return "24 NOV 2015" end
 
-ssk.__measureSSK			      = false		-- Show how much memory is used by each module and all of SSK
-ssk.__enableAutoListeners	   = true 		-- Enables automatic attachment of event listeners in extended display library
-ssk.enableExperimental		   = false 		-- Enables experimental features (turn this off if you run into problems)
-ssk.__desktopMode		 	      = true 		-- Running in a 'desktop' app, not mobile.
-ssk.__adjustMeasureOnResize	= true 		-- When resize even occurs adjust screen mesurements.
+ssk.__measureSSK			      	= false		-- Show how much memory is used by each module and all of SSK
+ssk.__enableAutoListeners	   		= true 		-- Enables automatic attachment of event listeners in extended display library
+ssk.enableExperimental		   		= false 		-- Enables experimental features (turn this off if you run into problems)
+ssk.__desktopMode		 	      	= true 		-- Running in a 'desktop' app, not mobile.
+ssk.__adjustMeasureOnResize			= true 		-- When resize even occurs adjust screen mesurements.
 
 -- If measuring, get replacement 'require'
 --

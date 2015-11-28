@@ -21,6 +21,8 @@ if( _G.ssk ) then _G.ssk.tools = tools end
 
 tools.logger = require "ssk.tools.logger.logger"
 
+tools.tiledLoader = require "ssk.tools.tiledLoader"
+
 
 return tools
 
