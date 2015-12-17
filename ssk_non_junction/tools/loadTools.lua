@@ -18,13 +18,13 @@
 -- =============================================================
 -- Create ssk global if needed
 _G.ssk = _G.ssk or {}
-ssk.getVersion = function() return "13 DEC 2015" end
+ssk.getVersion = function() return "14 OCT 2015" end
 
-ssk.__measureSSK			      	= false		-- Show how much memory is used by each module and all of SSK
-ssk.__enableAutoListeners	   	= true 		-- Enables automatic attachment of event listeners in extended display library
-ssk.enableExperimental		   	= false 		-- Enables experimental features (turn this off if you run into problems)
-ssk.__desktopMode		 	      	= true 		-- Running in a 'desktop' app, not mobile.
-ssk.__adjustMeasureOnResize		= true 		-- When resize even occurs adjust screen mesurements.
+ssk.__measureSSK			= false		-- Show how much memory is used by each module and all of SSK
+ssk.__enableAutoListeners	= true 		-- Enables automatic attachment of event listeners in extended display library
+ssk.enableExperimental		= false 		-- Enables experimental features (turn this off if you run into problems)
+ssk.__desktopMode		 	= true 		-- Running in a 'desktop' app, not mobile.
+ssk.__adjustMeasureOnResize	= true 		-- When resize even occurs adjust screen mesurements.
 
 -- If measuring, get replacement 'require'
 --
@@ -55,7 +55,7 @@ local_require "ssk.RGPersist"
 local_require "ssk.RGEasyBench"
 local_require "ssk.RGMultiscroller"
 
-local_require "ssk.tools.tools"
+
 
 --
 if(ssk.__enableExperimental) then 
@@ -65,22 +65,9 @@ end
 --
 -- External Libs/Modules (Written by others and used with credit.)
 --
-ssk.GGFile     = local_require( "ssk.external.GGFile" ) -- Modified version of GlitchGames' GGFile (added binary copy and move) 
-ssk.wait       =  local_require( "ssk.external.wait" ) -- Adapted from Steven Johnson's work (ggcrunchy) https://github.com/ggcrunchy/samples
-ssk.randomlua  = local_require( "ssk.external.randomlua" ) -- Various 'math.random' alternatives
-ssk.oop        = local_require("ssk.external.30log") -- http://yonaba.github.io/30log/
-
---
--- Behaviors - Advanced!  You were warned
---
-ssk.behaviors = local_require( "ssk.behaviors.behaviors" )
-
-
--- Global Locking
---
-ssk.glock = require "ssk.extras.global_lock"
---ssk.glock.lock( _G )
-
+ssk.GGFile = local_require( "ssk.external.GGFile" ) -- Modified version of GlitchGames' GGFile (added binary copy and move) 
+ssk.wait =  local_require( "ssk.external.wait" ) -- Adapted from Steven Johnson's work (ggcrunchy) https://github.com/ggcrunchy/samples
+ssk.randomlua = local_require "ssk.external.randomlua" -- Various 'math.random' alternatives
 
 
 -- Meaure Final Cost of SSK (if enabled)
