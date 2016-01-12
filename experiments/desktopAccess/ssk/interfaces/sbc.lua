@@ -115,7 +115,7 @@ function sbc.table2TableRoller_CB( event )
 
 	local j = 0
 	for i = 1, #srcTable do
-		if( srcTable[i] == curText ) then
+		if( tostring(srcTable[i]) == tostring(curText) ) then
 			j = i
 			break
 		end

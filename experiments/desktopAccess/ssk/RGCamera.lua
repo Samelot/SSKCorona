@@ -121,8 +121,13 @@ function camera.tracking( trackObj, world, params )
 	end
 
 	world.enterFrame = function( event )
-		if( not isValid( world ) ) then return end
-		if( not isValid( trackObj ) ) then return end
+		if( not isValid( world ) ) then 
+			ignore( "enterFrame", world )
+			return 
+		end
+		if( not isValid( trackObj ) ) then 
+			return 
+		end
 		local dx = 0
 		local dy = 0
 		if(not lockX) then dx = trackObj.x - lx end		
@@ -132,7 +137,7 @@ function camera.tracking( trackObj, world, params )
 			lx = trackObj.x
 			ly = trackObj.y
 		end
-		return true
+		return false
 	end
 	Runtime:addEventListener( "enterFrame", world )
 end
@@ -159,7 +164,13 @@ function camera.trackingLooseSquare( trackObj, world, params )
 	world.ly = trackObj.y
 
 	world.enterFrame = function( event )
-		if( not isValid( world ) ) then return end
+		if( not isValid( world ) ) then 
+			ignore( "enterFrame", world )
+			return 
+		end
+		if( not isValid( trackObj ) ) then 
+			return 
+		end
 		local dx = trackObj.x - world.lx
 		local dy = trackObj.y - world.ly
 
@@ -169,7 +180,7 @@ function camera.trackingLooseSquare( trackObj, world, params )
 		if( lx > left and lx < right and ly > top and ly < bot ) then 
 			world.lx = trackObj.x
 			world.ly = trackObj.y
-			return true 
+			return false 
 		end
 
 		local ddy = 0
@@ -200,7 +211,7 @@ function camera.trackingLooseSquare( trackObj, world, params )
 			world.ly = trackObj.y
 		end
 
-		return true
+		return false
 	end
 	Runtime:addEventListener( "enterFrame", world )
 end
@@ -239,7 +250,17 @@ function camera.trackingLooseCircle( trackObj, world, params )
 	world.ly = trackObj.y
 
 	world.enterFrame = function( event )
-		if( not isValid( world ) ) then return end
+		if( not isValid( world ) ) then 
+			ignore( "enterFrame", world )
+			display.remove(innerCircle)
+			display.remove(outerCircle)
+
+			return 
+		end
+		if( not isValid( trackObj ) ) then 
+			return 
+		end
+
 		local dx = trackObj.x - world.lx
 		local dy = trackObj.y - world.ly
 		local lx, ly = trackObj:localToContent( 0, 0 )  -- EFM will allow for offset camera centering?
@@ -255,7 +276,7 @@ function camera.trackingLooseCircle( trackObj, world, params )
 		if( vLen <= deadRadius) then 
 			world.lx = trackObj.x
 			world.ly = trackObj.y
-			return true 
+			return false 
 		end
 
 		local dLen 
@@ -276,10 +297,75 @@ function camera.trackingLooseCircle( trackObj, world, params )
 			world.ly = trackObj.y
 		end
 
-		return true
+		return false
+	end
+	Runtime:addEventListener( "enterFrame", world )
+
+	function trackObj.destroyCamera( self )
+		display.remove(innerCircle)
+		display.remove(outerCircle)
+	end
+  
+end
+
+
+-- ==
+--		transitioning() - Follows target exactly.
+-- ==
+function camera.transitioning( trackObj, world, params )	
+
+	if( not isValid( world ) ) then return end
+	
+	params = params or {}	
+   local time     = params.time or 250
+   local myEasing = params.easing or easing.linear
+	local lockX    = params.lockX 
+	local lockY    = params.lockY
+	local centered = fnn( params.centered, false)
+
+	local lx = 0
+	local ly = 0
+
+	if( centered ) then
+		if( lockX ) then
+			lx = trackObj.x
+		else
+			lx = centerX
+		end
+
+		if( lockY ) then
+			ly = trackObj.y
+		else
+			ly = centerY
+		end
+	else
+		lx = trackObj.x
+		ly = trackObj.y
+	end
+
+	trackObj.updateCamera = function( event )
+		if( not isValid( world ) ) then 
+			ignore( "enterFrame", world )
+			return 
+		end
+		if( not isValid( trackObj ) ) then 
+			return 
+		end
+		local dx = 0
+		local dy = 0
+		if(not lockX) then dx = trackObj.x - lx end		
+		if(not lockY) then dy = trackObj.y - ly end      
+		if(dx or dy) then	
+         transition.to( world, { x = world.x - dx, y = world.y - dy, time = time, transition = myEasing } )
+			--world:translate(-dx,-dy)
+			lx = trackObj.x
+			ly = trackObj.y
+		end
+		return false
 	end
 	Runtime:addEventListener( "enterFrame", world )
 end
+
 
 ----------------------------------------------------------------------
 --	4. The Module

@@ -170,6 +170,7 @@ end
 function table.save( theTable, fileName, base  )
 	local base = base or  system.DocumentsDirectory
 	local path = system.pathForFile( fileName, base )
+   print(path)
 	local fh = io.open( path, "w" )
 
 	if(fh) then
@@ -190,7 +191,7 @@ function table.stripSave( theTable, fileName, base )
 
 	local tmpTable = table.deepStripCopy(theTable)
 
-	if(fh) then
+	if( fh ) then
 		fh:write(json.encode( tmpTable ))
 		io.close( fh )
 		return true
@@ -202,12 +203,12 @@ end
 --    table.load( fileName [, base ] ) - Loads table from file (Uses JSON library as intermediary)
 -- ==
 function table.load( fileName, base )
-	local base = base or  system.DocumentsDirectory
+	local base = base or system.DocumentsDirectory
 	local path = system.pathForFile( fileName, base )
 	if(path == nil) then return nil end
 	local fh, reason = io.open( path, "r" )
 	
-	if fh then
+	if( fh) then
 		local contents = fh:read( "*a" )
 		io.close( fh )
 		local newTable = json.decode( contents )

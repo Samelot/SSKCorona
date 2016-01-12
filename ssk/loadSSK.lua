@@ -44,7 +44,7 @@ local_require "ssk.RGCC"
 local_require "ssk.RGEasyKeys"
 local_require "ssk.RGEasyInputs.RGEasyInputs"
 
-local_require "ssk.RGFiles"
+--local_require "ssk.RGFiles"
 local_require "ssk.actions.RGActions"
 local_require "ssk.RGMisc"
 

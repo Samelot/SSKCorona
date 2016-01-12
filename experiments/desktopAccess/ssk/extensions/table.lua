@@ -139,11 +139,38 @@ function table.deepStripCopy( src, dst )
 end
 
 -- ==
+--    table.shallowStripCopy( src [ , dst ]) - Copies single-level tables; handles non-integer indexes; does not copy metatable
+-- ==
+function table.shallowStripCopy( src, dst )
+	local dst = dst or {}
+	if( not src ) then return dst end
+	for k,v in pairs(src) do 
+		local key = tostring(k)
+		local value = tostring(v)
+		local keyType = type(k)
+		local valueType = type(v)
+
+		if( valueType == "function" or 
+		    valueType == "userdata" or 
+			key == "_class"         or
+			key == "__index"           ) then
+
+			-- STRIP (SKIP IT)
+		else		
+			dst[k] = v
+		end
+	end
+	return dst
+end
+
+
+-- ==
 --    table.save( theTable, fileName [, base ] ) - Saves table to file (Uses JSON library as intermediary)
 -- ==
 function table.save( theTable, fileName, base  )
 	local base = base or  system.DocumentsDirectory
 	local path = system.pathForFile( fileName, base )
+   print(path)
 	local fh = io.open( path, "w" )
 
 	if(fh) then
@@ -164,7 +191,7 @@ function table.stripSave( theTable, fileName, base )
 
 	local tmpTable = table.deepStripCopy(theTable)
 
-	if(fh) then
+	if( fh ) then
 		fh:write(json.encode( tmpTable ))
 		io.close( fh )
 		return true
@@ -176,12 +203,12 @@ end
 --    table.load( fileName [, base ] ) - Loads table from file (Uses JSON library as intermediary)
 -- ==
 function table.load( fileName, base )
-	local base = base or  system.DocumentsDirectory
+	local base = base or system.DocumentsDirectory
 	local path = system.pathForFile( fileName, base )
 	if(path == nil) then return nil end
 	local fh, reason = io.open( path, "r" )
 	
-	if fh then
+	if( fh) then
 		local contents = fh:read( "*a" )
 		io.close( fh )
 		local newTable = json.decode( contents )
@@ -236,9 +263,10 @@ function table.dump(theTable, padding, marker ) -- Sorted
 		for i,n in ipairs(tmp) do 		
 
 			local key = tmp[i]
+			local value = theTable[key]
 			local keyType = type(key)
-			local valueType = type(theTable[key])
-			local value = tostring(theTable[key])
+			local valueType = type(value)
+			value = tostring(value)
 			local keyString = tostring(key) .. " (" .. keyType .. ")"
 			local valueString = tostring(value) .. " (" .. valueType .. ")" 
 
@@ -396,3 +424,103 @@ table.getRandom = function( t )
 	if( #t == 0 ) then return nil end
 	return t[mRand(1,#t)]
 end
+
+
+--------------------------------------------------------------------------------
+-- CONVERT TABLE TO STRING
+-- From Jason Schroeder's Twitter Demo
+-- http://www.jasonschroeder.com/
+--------------------------------------------------------------------------------
+function table.toString ( t, flat )
+	local output = {}
+    local print_r_cache={}
+    local function sub_print_r(t,indent)
+    	local function assemble(string)
+    		output[#output + 1] = string
+    	end
+        if (print_r_cache[tostring(t)]) then
+            assemble(indent.."*"..tostring(t))
+        else
+            print_r_cache[tostring(t)]=true
+            if (type(t)=="table") then
+                for pos,val in pairs(t) do
+                    if (type(val)=="table") then
+                    	if( flat ) then
+                        	assemble(indent..tostring(t).." {")
+                        else
+                        	assemble(indent.."["..pos.."] => "..tostring(t).." {")
+                        end                        
+                        sub_print_r(val,indent..string.rep(" ",string.len(pos)+8))
+                        assemble(indent..string.rep(" ",string.len(pos)+6).."}")
+                    elseif (type(val)=="string") then
+                    	if( flat ) then
+                        	assemble(indent .. val)
+                        else
+                        	assemble(indent.."["..pos..'] => "'..val..'"')
+                        end
+                    else
+                    	if( flat ) then
+                        	assemble(indent .. tostring(val))
+                        else
+                        	assemble(indent.."["..pos.."] => "..tostring(val))
+                        end
+                    end
+                end
+            else
+                assemble(indent..tostring(t))
+            end
+        end
+    end
+	sub_print_r(t,"  ")
+	local tmp = output
+	output = ""
+	for i = 1, #tmp do
+		output = output .. tmp[i]
+	end
+    return output
+end
+
+function table.toString_old( t, flat )
+	local output = {}
+    local print_r_cache={}
+    local function sub_print_r(t,indent)
+    	local function assemble(string)
+    		output[#output + 1] = string
+    	end
+        if (print_r_cache[tostring(t)]) then
+            assemble(indent.."*"..tostring(t))
+        else
+            print_r_cache[tostring(t)]=true
+            if (type(t)=="table") then
+                for pos,val in pairs(t) do
+                    if (type(val)=="table") then
+                    	if( flat ) then
+                        	assemble(indent..tostring(t).." {")
+                        else
+                        	assemble(indent.."["..pos.."] => "..tostring(t).." {")
+                        end                        
+                        sub_print_r(val,indent..string.rep(" ",string.len(pos)+8))
+                        assemble(indent..string.rep(" ",string.len(pos)+6).."}")
+                    elseif (type(val)=="string") then
+                    	if( flat ) then
+                        	assemble(indent .. val)
+                        else
+                        	assemble(indent.."["..pos..'] => "'..val..'"')
+                        end
+                    else
+                    	if( flat ) then
+                        	assemble(indent .. tostring(val))
+                        else
+                        	assemble(indent.."["..pos.."] => "..tostring(val))
+                        end
+                    end
+                end
+            else
+                assemble(indent..tostring(t))
+            end
+        end
+    end
+	sub_print_r(t,"  ")
+    return output
+end
+
