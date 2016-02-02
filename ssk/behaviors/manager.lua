@@ -47,7 +47,7 @@ e ssk.behaviors:registerBehavior( public._behaviorName, public )
 e
 --]]
 function behaviorsManager:registerBehavior( behaviorName, behaviorObject )	
-	print("behaviorsManager:registerBehavior( \"" .. behaviorName .. "\" , " .. tostring(behaviorObject) .. " )" )	
+	--print("behaviorsManager:registerBehavior( \"" .. behaviorName .. "\" , " .. tostring(behaviorObject) .. " )" )	
 	if(self.knownBehaviors[behaviorName] ~= nil) then
 		-- EFM - Not really an error
 		-- EFM - Allow multiple requires of same behavior (users can access them locally)

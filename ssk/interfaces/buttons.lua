@@ -59,7 +59,8 @@ function buttons:addButtonPreset( presetName, params )
 						 "unselImgSrc", "selImgSrc", "selImgFillColor", "unselImgFillColor",  "selKnobImgFillColor", "unselKnobImgFillColor", 
 						 "buttonOverlayRectColor", "buttonOverlayImgSrc", "buttonOverlayFillColor",
 						 "onPress", "onRelease", "onEvent", "buttonType", 
-						 "pressSound", "releaseSound", "sound", "cornerRadius", "labelHorizAlign" 
+						 "pressSound", "releaseSound", "sound", "cornerRadius", "labelHorizAlign",
+                   "baseFolder"
 					   }
 
 	for i = 1, #copyParams do
@@ -73,14 +74,16 @@ function buttons:addButtonPreset( presetName, params )
 	entry.unselRectEn 		= fnn(params.unselRectEn, not params.unselImgSrc)
 	entry.selRectEn    		= fnn(params.selRectEn, not params.selImgSrc)
 	entry.buttonType   		= fnn(params.buttonType, "push" )
-	entry.labelText 		= fnn(params.labelText, "")
-	entry.labelSize     	= fnn(params.labelSize, 20)
-	entry.labelColor    	= fnn(params.labelColor, {1,1,1,1})
-	entry.selLabelColor 	= fnn(params.selLabelColor, params.labelColor, {1,1,1,1})
-	entry.labelFont 		= fnn(params.labelFont, gameFont, native.systemFontBold)
+	entry.labelText 		   = fnn(params.labelText, "")
+	entry.labelSize     	   = fnn(params.labelSize, 20)
+	entry.labelColor    	   = fnn(params.labelColor, {1,1,1,1})
+	entry.selLabelColor 	   = fnn(params.selLabelColor, params.labelColor, {1,1,1,1})
+	entry.labelFont 		   = fnn(params.labelFont, gameFont, native.systemFontBold)
 	entry.labelOffset 		= fnn(params.labelOffset, {0,0})
 	entry.labelHorizAlign 	= fnn(params.labelHorizAlign, "center" )
-    entry.emboss 			= fnn(params.emboss, false)
+   entry.baseFolder 	      = fnn(params.baseFolder, system.ResourceDirectory )
+   
+    entry.emboss 			   = fnn(params.emboss, false)
     entry.labelAnchorX		= fnn(params.labelAnchorX, 0.5)
 
 end
@@ -247,7 +250,7 @@ function buttons:newButton( parentGroup, params )
 	-- UNSEL IMG
 	if(buttonInstance.unselImgSrc) then		
 		local unselImgObj
-		unselImgObj = display.newImageRect( buttonInstance.unselImgSrc, buttonInstance.w, buttonInstance.h)
+		unselImgObj = display.newImageRect( buttonInstance.unselImgSrc, buttonInstance.baseFolder, buttonInstance.w, buttonInstance.h)
 		unselImgObj.isHitTestable = true
 
 		if(buttonInstance.unselImgFillColor ) then
@@ -288,7 +291,7 @@ function buttons:newButton( parentGroup, params )
 	-- SEL IMG
 	if(buttonInstance.selImgSrc) then		
 		local selImgObj
-		selImgObj = display.newImageRect( buttonInstance.selImgSrc, buttonInstance.w, buttonInstance.h)
+		selImgObj = display.newImageRect( buttonInstance.selImgSrc, buttonInstance.baseFolder, buttonInstance.w, buttonInstance.h)
 		selImgObj.isHitTestable = true
 
 		if(buttonInstance.selImgFillColor ) then
@@ -339,7 +342,7 @@ function buttons:newButton( parentGroup, params )
 
 	-- BUTTON Overlay Image
 	if(buttonInstance.buttonOverlayImgSrc) then
-		local overlayImage = display.newImageRect( buttonInstance.buttonOverlayImgSrc, buttonInstance.w, buttonInstance.h)
+		local overlayImage = display.newImageRect( buttonInstance.buttonOverlayImgSrc, buttonInstance.baseFolder, buttonInstance.w, buttonInstance.h)
 		buttonInstance:insert( overlayImage, false )
 		buttonInstance.overlayImage = overlayImage
 		
