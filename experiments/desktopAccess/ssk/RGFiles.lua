@@ -249,12 +249,24 @@ function rgFiles.getMyDocuments( ) return myDocumentsPath end
 --
 -- mkdir( path, base ) -- Make a directory. (base defaults to rgFile.DesktopDirectory)
 --
-function rgFiles.mkdir( path, base )
+function rgFiles.mkDesktopDir( path, base )
    base = base or rgFiles.DesktopDirectory   
    local fullPath = (base == rgFiles.DesktopDirectory ) and desktopPath or myDocumentsPath
    fullPath = fullPath .. "\\" .. path
    return lfs.mkdir( fullPath )
 end   
+
+function rgFiles.mkDocumentsDir( dirName )
+	local temp_path = system.pathForFile( "", system.DocumentsDirectory )
+	local success = lfs.chdir( temp_path ) 
+	local new_folder_path
+	if success then
+		success = lfs.mkdir( dirName )
+		new_folder_path = lfs.currentdir() .. "/" .. dirName
+	end
+	return success
+end
+
 
 --
 -- rmdir( path, base ) -- Remove a directory. (base defaults to rgFile.DesktopDirectory)
@@ -265,6 +277,20 @@ function rgFiles.rmdir( path, base )
    fullPath = fullPath .. "\\" .. path
    return lfs.rmdir( fullPath )
 end 
+
+function rgFiles.rmDocumentsFile( dirName )
+	local temp_path  = system.pathForFile( dirName , system.DocumentsDirectory )
+	if(onWin) then
+		command = "del " .. '"' .. temp_path .. '"'
+	else
+		--command = "rm -rf " .. '"' .. temp_path .. '"'
+		command = "rm " .. '"' .. temp_path .. '"'
+	end
+	------print( command )
+	local retVal =  os.execute( command )
+	if( retVal == 0 ) then return true end
+	return false
+end
 
 --
 -- getPath( path, base ) -- Converts a partial path to a full path. (base defaults to rgFile.DesktopDirectory)
