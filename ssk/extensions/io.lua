@@ -16,7 +16,29 @@
 	> SSK is NOT free to credit yourself with.
 ]]
 -- =============================================================
+local lfs = require "lfs"
 
+local strGSub     = string.gsub
+local strSub      = string.sub
+local strFormat   = string.format
+local strFind     = string.find
+
+
+-- 
+-- repairPath( path ) -- Converts path to 'OS' correct style of back- or forward- slashes
+-- 
+function io.repairPath( path )
+   if( onOSX or onAndroid ) then
+      path = strGSub( path, "\\", "/" )
+      path = path strGSub( path, "//", "/" )
+   elseif( onWin ) then
+      path = strGSub( path, "/", "\\" )
+   end
+   return path
+end
+
+
+--[[ ONLY WORKS FOR FILES
 function io.exists( fileName, base )
    local base = base or system.DocumentsDirectory	
    local fileName = fileName
@@ -31,6 +53,19 @@ function io.exists( fileName, base )
    end
    io.close(f)
    return true 
+end
+--]]
+
+-- WORKS FOR FILES AND FOLDERS
+function io.exists( fileName, base )
+   local base = base or system.DocumentsDirectory	
+   if( base ) then
+      fileName = system.pathForFile( fileName, base )
+   end   
+   if not fileName then return false end
+   fileName = io.repairPath( fileName )
+   local attr = lfs.attributes( fileName )
+   return (attr and (attr.mode == "file" or attr.mode == "directory") )
 end
 
 
@@ -49,7 +84,7 @@ else
       if( base ) then
          fileName = system.pathForFile( fileName, base )
       end
-
+      fileName = io.repairPath( fileName )
       local f=io.open(fileName,"r")
       if (f == nil) then 
          return nil
@@ -73,7 +108,7 @@ else
       if( base ) then
          fileName = system.pathForFile( fileName, base )
       end
-
+      fileName = io.repairPath( fileName )
       local f=io.open(fileName,"w")
       if (f == nil) then 
          return nil
@@ -96,7 +131,7 @@ else
       if( base ) then
          fileName = system.pathForFile( fileName, base )
       end
-
+      if not fileName then return false end
       local f=io.open(fileName,"a")
       if (f == nil) then 
          return nil
@@ -124,7 +159,7 @@ else
       if( base ) then
          fileName = system.pathForFile( fileName, base )
       end
-
+      fileName = io.repairPath( fileName )
       local f=io.open(fileName,"r")
       if (f == nil) then 
          return fileContents
@@ -139,3 +174,24 @@ else
       return fileContents
    end
 end
+
+if( io.mkdir ) then
+   print("ERROR! io.mkdir() exists already")
+else
+   function io.mkdir( dirName )
+      local cur_dir = lfs.currentdir()
+      local temp_path = system.pathForFile( "", system.DocumentsDirectory )
+      temp_path = io.repairPath( temp_path )
+      local success = lfs.chdir( temp_path ) 
+      if success then
+         success = lfs.mkdir( dirName )         
+         if( cur_dir ) then
+            lfs.chdir( cur_dir ) 
+         end
+      end
+      return success
+   end
+end
+
+
+

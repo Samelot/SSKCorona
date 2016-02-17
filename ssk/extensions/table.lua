@@ -170,7 +170,6 @@ end
 function table.save( theTable, fileName, base  )
    local base = base or  system.DocumentsDirectory
    local path = system.pathForFile( fileName, base )
-   print(path)
    local fh = io.open( path, "w" )
 
    if(fh) then
@@ -296,9 +295,12 @@ table.print_r = function ( t )
          if (type(t)=="table") then
             for pos,val in pairs(t) do
                if (type(val)=="table") then
-                  print(indent.."["..pos.."] => "..tostring(t).." {")
-                  sub_print_r(val,indent..string.rep(" ",string.len(pos)+1))
-                  print(indent..string.rep(" ",string.len(pos)+1).."}")
+                  print(indent.."["..pos.."] => "..tostring(t))
+                  print(indent.."{")
+                  --sub_print_r(val,indent..string.rep(" ",string.len(pos)+6))
+                  sub_print_r(val,indent..string.rep(" ",3))
+                  --print(indent..string.rep(" ",string.len(pos)+1).."}")
+                  print(indent..string.rep(" ",0).."}")
                elseif (type(val)=="string") then
                   print(indent.."["..pos..'] => "'..val..'"')
                else

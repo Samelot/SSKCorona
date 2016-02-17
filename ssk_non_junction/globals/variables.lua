@@ -103,12 +103,6 @@ calcMeasurementSpacing()
 -- =============================================================
 -- Environment
 -- =============================================================
---_G.onSimulator = system.getInfo( "environment" ) == "simulator"
---_G.oniOS = ( system.getInfo("platformName") == "iPhone OS") 
---_G.onAndroid = ( system.getInfo("platformName") == "Android") 
---_G.onOSX = ( system.getInfo("platformName") == "Mac OS X")
---_G.onWin = ( system.getInfo("platformName") == "Win")
---_G.onWinPhone = ( system.getInfo("platformName") == "WinPhone")
 _G.onSimulator    = system.getInfo( "environment" ) == "simulator"
 _G.oniOS          = ( system.getInfo("platformName") == "iPhone OS") 
 _G.onAndroid      = ( system.getInfo("platformName") == "Android") 
@@ -118,7 +112,7 @@ _G.onWin          = ( system.getInfo("platformName") == "Win")
 _G.onNook         = (system.getInfo("targetAppStore") == "nook");
 _G.onAmazon       = (system.getInfo("targetAppStore") == "amazon");
 _G.onAndroid      = _G.onAndroid or _G.onNook or _G.onAmazon
-
+_G.onDesktop      = ( not _G.onSimulator and ( _G.onOSX or _G.onWin ) )
 
 
 -- =============================================================

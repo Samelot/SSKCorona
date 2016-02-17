@@ -687,6 +687,29 @@ end
 
 
 
+if( debug ) then
+   function misc.countLocals( debugLvl, level )    
+      
+      level = level or 2
+      local i = 1
+      while(debug.getlocal(level,i) ~= nil ) do
+         local name,value = debug.getlocal(level,i)
+         if( debugLvl and debugLvl > 1 ) then
+            print(name,value)
+         end
+         i = i + 1
+      end
+      if( debugLvl and debugLvl > 0 ) then
+         print("Found: " .. tostring( i ) .. " Locals" )
+      end
+      return i
+   end
+else
+   function misc.countLocals()
+      return 0
+   end
+end
+
 
 -- ========================================================================
 

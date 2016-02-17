@@ -44,7 +44,7 @@ local_require "ssk.RGCC"
 local_require "ssk.RGEasyKeys"
 local_require "ssk.RGEasyInputs.RGEasyInputs"
 
-local_require "ssk.RGFiles"
+local_require "ssk.RGFiles.RGFiles"
 local_require "ssk.actions.RGActions"
 local_require "ssk.RGMisc"
 
@@ -54,6 +54,8 @@ local_require "ssk.RGPoints"
 local_require "ssk.RGPersist"
 local_require "ssk.RGEasyBench"
 local_require "ssk.RGMultiscroller"
+
+local_require "ssk.RGEasyTextField"
 
 local_require "ssk.tools.tools"
 
