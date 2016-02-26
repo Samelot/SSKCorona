@@ -56,7 +56,6 @@ function buttons:addButtonPreset( presetName, params )
       "selRectFillColor", "unselRectFillColor",
       "strokeWidth", "strokeColor", 
       "unselStrokeWidth", "unselStrokeColor", "selStrokeWidth", "selStrokeColor", 
-      "selSliceSrc", "unselSliceSrc",
       "unselImgSrc", "selImgSrc", "selImgFillColor", "unselImgFillColor",  "selKnobImgFillColor", "unselKnobImgFillColor", 
       "buttonOverlayRectColor", "buttonOverlayImgSrc", "buttonOverlayFillColor",
       "onPress", "onRelease", "onEvent", "buttonType", 
@@ -72,8 +71,8 @@ function buttons:addButtonPreset( presetName, params )
    entry.touchMaskW     	= params.touchMaskW
    entry.touchMaskH     	= params.touchMaskH
 
-   entry.unselRectEn       = (params.unselRectFillColor) and (not params.unselImgSrc) and (not params.unselSliceSrc)
-   entry.selRectEn         = (params.selRectFillColor) and (not params.selImgSrc) and (not params.selSliceSrc)
+   entry.unselRectEn 		= fnn(params.unselRectEn, not params.unselImgSrc)
+   entry.selRectEn    		= fnn(params.selRectEn, not params.selImgSrc)
    entry.buttonType   		= fnn(params.buttonType, "push" )
    entry.labelText 		   = fnn(params.labelText, "")
    entry.labelSize     	   = fnn(params.labelSize, 20)
@@ -132,15 +131,17 @@ function buttons:newButton( parentGroup, params )
    buttonInstance.labelColor    = fnn(buttonInstance.labelColor, {1,1,1,1})
    buttonInstance.selLabelColor = fnn(buttonInstance.selLabelColor, buttonInstance.labelColor)
 
-   buttonInstance.labelFont         = fnn(buttonInstance.labelFont, native.systemFontBold)
-   buttonInstance.labelOffset       = fnn(buttonInstance.labelOffset, {0,0})
+   buttonInstance.labelFont    = fnn(buttonInstance.labelFont, native.systemFontBold)
+   buttonInstance.labelOffset   = fnn(buttonInstance.labelOffset, {0,0})
    buttonInstance.labelHorizAlign 	= fnn(buttonInstance.labelHorizAlign, "center" )
-   buttonInstance.emboss            = fnn(buttonInstance.emboss, false)
+   buttonInstance.emboss       = fnn(buttonInstance.emboss, false)
 
-   buttonInstance.unselRectEn             = (buttonInstance.unselRectFillColor) and (not buttonInstance.unselImgSrc) and (not buttonInstance.unselSliceSrc)
-   buttonInstance.selRectEn               = (buttonInstance.selRectFillColor) and (not buttonInstance.selImgSrc) and (not buttonInstance.selSliceSrc)
+   buttonInstance.unselRectEn  = fnn(buttonInstance.unselRectEn, not buttonInstance.unselImgSrc)
+   buttonInstance.selRectEn    = fnn(buttonInstance.selRectEn, not buttonInstance.selImgSrc)
+
 
    buttonInstance.isPressed    = false -- start off unpressed
+
 
    -- ====================
    -- Create the button
@@ -245,45 +246,6 @@ function buttons:newButton( parentGroup, params )
       selRect.isVisible = false
       buttonInstance.selRect = selRect
    end
-
-   -- UNSEL SLICE IMG
-   if(buttonInstance.unselSliceSrc) then    
-      local unselSliceObj
-      --unselSliceObj = display.newImageRect( buttonInstance.unselSliceSrc, buttonInstance.baseFolder, buttonInstance.w, buttonInstance.h)
-      unselSliceObj = ssk.misc.createSlicedImage( buttonInstance, buttonInstance.unselSliceSrc, 0, 0, buttonInstance.w, buttonInstance.h )
-      unselSliceObj.isHitTestable = true -- EDOCHI
-
-      if(buttonInstance.unselSliceFillColor ) then
-         local r = fnn(buttonInstance.unselSliceFillColor[1], 1)
-         local g = fnn(buttonInstance.unselSliceFillColor[2], 1)
-         local b = fnn(buttonInstance.unselSliceFillColor[3], 1)
-         local a = fnn(buttonInstance.unselSliceFillColor[4], 1)
-         unselSliceObj:setFillColor(r,g,b,a)
-      end
-      unselSliceObj.isVisible = true
-      buttonInstance.unsel = unselSliceObj
-   end
-
-   -- SEL SLICE IMG
-   if(buttonInstance.selSliceSrc) then    
-      local selSliceObj
-      --selSliceObj = display.newImageRect( buttonInstance.selSliceSrc, buttonInstance.baseFolder, buttonInstance.w, buttonInstance.h)
-      selSliceObj = ssk.misc.createSlicedImage( buttonInstance, buttonInstance.selSliceSrc, 0, 0, buttonInstance.w, buttonInstance.h )
-      selSliceObj.isHitTestable = true -- EDOCHI
-
-      if(buttonInstance.selSliceFillColor ) then
-         local r = fnn(buttonInstance.selSliceFillColor[1], 1)
-         local g = fnn(buttonInstance.selSliceFillColor[2], 1)
-         local b = fnn(buttonInstance.selSliceFillColor[3], 1)
-         local a = fnn(buttonInstance.selSliceFillColor[4], 1)
-         selSliceObj:setFillColor(r,g,b,a)
-      end
-
-      selSliceObj.isVisible = true
-      buttonInstance.sel = selSliceObj
-   end
-
-
 
    -- UNSEL IMG
    if(buttonInstance.unselImgSrc) then		
@@ -1180,17 +1142,13 @@ function buttons:touch( params )
          end
 
          -- Allow touch events to be sent normally to the objects they "hit"
-         if( theButton.sskTouch ) then
-            -- NOTHING
-            table.dump( theButton )     
-         else
-            display.getCurrentStage():setFocus( theButton, nil )
-         end    
-         
+         display.getCurrentStage():setFocus( theButton, nil )
          theButton.isFocus = false
+
+
       end
    end
-   return false -- result
+   return result
 end
 
 return buttons

@@ -18,7 +18,6 @@ local multiScroller = {}
 _G.ssk = _G.ssk or {}
 _G.ssk.multiScroller = multiScroller
 
-
 ---
 ---
 -- Forward Declarations
@@ -71,8 +70,9 @@ local onContentTouch2
 ----------------------------------------------------------------------
 multiScroller.createVScroller = function( group, params )
     params = params or {}
+    local ox, oy        = group:localToContent( group.x, group.y )
     local cTop          = (params.cTop or 0) 
-    local cTopActual    = cTop - unusedHeight/2
+    local cTopActual    = (oy == 0) and (cTop - unusedHeight/2) or cTop
     local contentH      = params.contentH or h - cTop + unusedHeight
     local cFill         = params.cFill or { 1, 1, 1, 1 }
     local sFill         = params.sFill or { 1, 1, 1, 1 }
@@ -124,9 +124,12 @@ multiScroller.createVScroller = function( group, params )
         overlayTouch = peerScroller.overlayTouch
     else
         overlayTouch = newImageRect( overlayG, centerX, centerY, "images/fillT.png",
-                                     { w = w + unusedWidth, 
-                                       h = h + unusedHeight, fill = sFill, 
+                                     { w = 100000, 
+                                       h = 100000, fill = sFill, 
                                        isHitTestable = false } )
+    end
+    if( params.touchX ) then
+        overlayTouch.x = params.touchX 
     end
 
     -- Vertical Scroll Touch
@@ -135,9 +138,12 @@ multiScroller.createVScroller = function( group, params )
         scrollTouch = peerScroller.scrollTouch
     else
         scrollTouch = newImageRect( overlayG, centerX, centerY, "images/fillT.png",
-                                       { w = w + unusedWidth, h = h + unusedHeight,
+                                       { w = 100000, h = 100000,
                                          fill = _R_, alpha = 0.5 } )
         scrollTouch:toBack()
+    end
+    if( params.touchX ) then
+        scrollTouch.x = params.touchX 
     end
     
     --scrollTouch.dragLayer = contentG
@@ -148,7 +154,8 @@ multiScroller.createVScroller = function( group, params )
 
     -- Content Filler
     local contentFill  = newImageRect( contentG, centerX, contentH/2, "images/fillT.png",
-                                   { w = w + unusedWidth, h = contentH, fill = cFill, isHitTestable = false } )
+                                       { w = w + unusedWidth, h = contentH, fill = cFill, 
+                                         isHitTestable = false } )
     
     -- Utility functions for drag layer (contentG)
     contentG.belowTop = function( self, offset )
@@ -1196,6 +1203,7 @@ onContentTouch2 = function( self, event )
         return self:_touch( event ) 
     end
 end
+
 
 -- This calls a function (just once) when this object is determined to be actually on screen.
 multiScroller.addOnScreenExecute = function( obj, cb, buffer, cb2 )

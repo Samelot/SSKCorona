@@ -64,9 +64,8 @@ end
 function util.repairPath( path, forceForward )
    if( onOSX or onAndroid or forceForward == true) then
       path = strGSub( path, "\\", "/" )
-      path = path strGSub( path, "//", "/" )
+      --path = path strGSub( path, "//", "/" )
    elseif( onWin ) then
-      path = path strGSub( path, "//", "/" )
       path = strGSub( path, "/", "\\" )
    end
    return path
@@ -75,130 +74,64 @@ end
 -- =====================================================
 -- File Operations
 -- =====================================================
-function util.mvFile( src, dst ) -- Move/Rename File
-   local result, reason = os.rename(src, dst)
-   if( not result ) then
-      print("Tried to move/rename " .. tostring( src ) .. " to " ..  dst " and failed: " .. tostring( reason ) )
-   end
-   return result
-end
-
-function util.rmFile( name ) -- Remove File
-   local result, reason = os.remove(name)
-   if( not result ) then
-      print("Tried to remove " .. tostring( name ) .. " and failed: " .. tostring( reason ) )
-   end
-   return result
-end
-
--- EFM - MAY NOT WORK WELL FOR IMAGES, SOUNDS, etc.
+util.mvFile   = os.rename  -- Move File
+util.rmFile   = os.remove  -- Remove File
 function util.cpFile( src, dst ) -- Copy File
-   retVal = RGFiles.util.writeFile( RGFiles.util.readFile( src ) or "", dst ) 
-   return true -- EFM need better error checking
+   local retVal
+   if(onWin) then
+      local command = "copy /Y " .. '"' .. src  .. '" "' .. dst .. '"'      
+      retVal =  (os.execute( command ) == 0)
+         
+   elseif( onOSX ) then
+      local command = "cp " .. '"' .. src  .. '" "' .. dst .. '"'
+      retVal =  (os.execute( command ) == 0)
+   
+   else -- Must be on Mobile device...
+      retVal = RGFiles.util.writeFile( RGFiles.util.readFile( src ) or "", dst ) 
+   end      
+   return retVal
 end
-
 
 -- =====================================================
 -- Folder Operations
 -- =====================================================
-function util.mvFolder( src, dst ) -- Move/Rename File
-   local result, reason = os.rename(src,dst)
-   if( not result ) then
-      print("Tried to move/rename " .. tostring( src ) .. " to " .. tostring( dst ) .. " and failed: " .. tostring( reason ) )
-   end
-   return result
+util.mvFolder = os.rename
+util.mkFolder = lfs.mkdir -- Make Folder
+function util.cpFolder( src, dst ) -- Copy Folder
+   local retVal = false
+   if(onWin) then
+      local command = "xcopy /Y /S " .. '"' .. src  .. '" "' .. dst .. '\\"'
+      retVal =  (os.execute( command ) == 0)
+   
+   elseif( onOSX ) then
+      local command = "cp -r" .. '"' .. src  .. '" "' .. dst .. '"'
+      retVal =  (os.execute( command ) == 0)
+   
+   else -- Must be on Mobile device
+      error("Mobile folder to folder copies not supported yet!")
+      -- EFM NO SOLUTION YET
+      retVal = false
+   end      
+   return retVal
 end
-
-function util.mkFolder( name, makeFailOK ) -- Remove File
-   if( util.exists( name ) ) then return true end
-   makeFailOK = makeFailOK or false
-   local result, reason = lfs.mkdir (name)
-   if( not result and makeFailOK == false ) then
-      print("Tried to make folder " .. tostring( name ) .. " and failed: " .. tostring( reason ) )
-   end
-   return result
-end
-
--- EFM eventually replace this with pure lfs.* and io.* calls
-function util.cpFolder( src, dst, makeFailOK ) -- Remove Folder
-   makeFailOK = true
-   src = util.repairPath( src, true )
-   dst = util.repairPath( dst, true )
-   makeFailOK = makeFailOK or false
-   local recurse   
-   recurse = function( path )
-      local toRecurse
-      if( path == nil ) then
-         path = ""
-         toRecurse = src
-      else
-         toRecurse = src .. "/" .. path 
-      end
-      for file in lfs.dir( toRecurse ) do
-         if( file == "." or file == ".." ) then
-            -- SKIP
-         else
-            local newpath =  util.repairPath( path .. "/" .. file )
-            if( util.isFolder( src .. "/" .. newpath ) ) then
-               if( not util.mkFolder( dst .. "/" .. newpath, makeFailOK  ) ) then return false end
-               recurse( newpath )
-            elseif( util.isFile( src .. "/" .. newpath ) ) then
-               if( not util.cpFile( util.repairPath(src .. newpath), util.repairPath(dst .. newpath) ) ) then
-                  return false
-               end
-            else 
-               print(" ERROR - what is: ", newpath )
-            end
-         end
-      end   
-   end
-   if( not util.isFolder( src ) ) then return false end
-   if( not util.mkFolder( dst, makeFailOK ) ) then return false end
-   recurse( )
-end   
-
 -- EFM https://forums.coronalabs.com/topic/29387-deleting-all-files-in-documents-directory/
---
--- EFM - Added 'safety check' to this to prevent recursions from roots of
--- drives, myfolder, or desktop ex: (c:/) would be illegal
---
 function util.rmFolder( path ) -- Remove Folder
-
-   if( not path or 
-       string.len( path ) <= 3 or
-       path == ssk.RGFiles.desktop.getDesktopRoot() or 
-       path == ssk.RGFiles.desktop.getMyDocumentsRoot() ) then
-      print("Woah!  Looks like you're trying to wipe out a whole drive, my documents, or desktop! " )
-      return false
-   end
-
-   local recurse
-   recurse = function( child )
-      local fullPath
-      for file in lfs.dir( child ) do
-         if( file == "." or file == ".." ) then
-            -- SKIP
-         else
-            fullPath = util.repairPath( child .. "/" .. file, true )
-            if( util.isFolder( fullPath ) ) then
-               recurse( fullPath )
-               local result, reason = lfs.rmdir( fullPath )
-               if( not result ) then
-                  print("Tried to remove folder " .. tostring( fullPath ) .. " and failed: " .. tostring( reason ) )
-               end   
-            elseif( util.isFile( fullPath ) ) then
-               util.rmFile( fullPath )
-            end
-         end
-      end   
-   end
-   recurse( path )
-
-   local result, reason = lfs.rmdir(path)
-   if( not result ) then
-      print("Tried to remove folder " .. tostring( path ) .. " and failed: " .. tostring( reason ) )
-   end   
+   local retVal = false
+   if(onWin) then
+      local command = "rmdir /q /s " .. '"' .. path .. '" 1>NUL'
+      retVal =  (os.execute( command ) == 0)
+   
+   elseif( onOSX ) then
+      local command = "rm -rf " .. '"' .. path .. '"'
+      retVal =  (os.execute( command ) == 0)
+   
+   else -- Must be on Mobile device
+      error("Sorry mobile folder to folder copies not supported yet!")      
+      retVal = lfs.rmdir( path ) -- EFM only works for empty folders
+   end      
+   return retVal
 end   
+
 
 
 -- =====================================================
@@ -443,41 +376,7 @@ end
 
 
 
-function util.findFileInPath( fileToFind, folderToSearch )
-   print( "Looking for file: " .. tostring( folderToSearch ) .. " in folder: " .. tostring( fileToFind ) )
-   local recurse   
-   recurse = function( path )
-      local toRecurse
-      if( path == nil ) then
-         path = ""
-         toRecurse = fileToFind
-      else
-         toRecurse = fileToFind .. "/" .. path 
-      end
-      toRecurse = util.repairPath( toRecurse )
-      for file in lfs.dir( toRecurse ) do
-         if( file == "." or file == ".." ) then
-         else
-            local newpath =  util.repairPath( path .. "/" .. file )
-            if( util.isFolder( fileToFind .. "/" .. newpath ) ) then
-              local found, atPath = recurse( newpath )
-               if( found ) then 
-                print("early abort")
-                return found, util.repairPath( atPath , true )
-              end
-            elseif( util.isFile( fileToFind .. "/" .. newpath ) ) then
-               if( file == folderToSearch ) then
-                  print("Found Corona executable at ", fileToFind .. "/" .. newpath )
-                  return true, fileToFind .. "/" .. newpath
-               end
-            else 
-               print(" ERROR - what is: ", newpath )
-            end
-         end
-      end   
-   end
-   return recurse()
-end   
+
 
 -- =============================================================
 -- =============================================================
@@ -487,65 +386,4 @@ function util.attach( module )
 end
 return util
 
-
--- =============================================================
--- TRASH   TRASH   TRASH   TRASH   TRASH   TRASH   TRASH   TRASH   
--- =============================================================
---[[
-function util.rmFolder( path ) -- Remove Folder
-   print("remove folder", path)
-   local retVal = false
-   if( onWin ) then
-      local command = "rmdir /q /s " .. '"' .. path .. '" 1>NUL'
-      retVal =  (os.execute( command ) == 0)
-   
-   elseif( onOSX ) then
-      local command = "rm -rf " .. '"' .. path .. '"'
-      retVal =  (os.execute( command ) == 0)
-   
-   else -- Must be on Mobile device
-      error("Sorry mobile folder to folder copies not supported yet!")      
-      retVal = lfs.rmdir( path ) -- EFM only works for empty folders
-   end      
-   return retVal
-end 
---]]  
-
---[[
-function util.cpFolder( src, dst ) -- Copy Folder
-   local retVal = false
-   if(onWin) then
-      local command = "xcopy /Y /S " .. '"' .. src  .. '" "' .. dst .. '\\"'
-      retVal =  (os.execute( command ) == 0)
-   
-   elseif( onOSX ) then
-      local command = "cp -r" .. '"' .. src  .. '" "' .. dst .. '"'
-      retVal =  (os.execute( command ) == 0)
-   
-   else -- Must be on Mobile device
-      error("Mobile folder to folder copies not supported yet!")
-      -- EFM NO SOLUTION YET
-      retVal = false
-   end      
-   return retVal
-end
-]]
-
---[[
-function util.cpFile( src, dst ) -- Copy File
-   local retVal
-   if(onWin) then
-      local command = "copy /Y " .. '"' .. src  .. '" "' .. dst .. '"'      
-      retVal =  (os.execute( command ) == 0)
-         
-   elseif( onOSX ) then
-      local command = "cp " .. '"' .. src  .. '" "' .. dst .. '"'
-      retVal =  (os.execute( command ) == 0)
-   
-   else -- Must be on Mobile device...
-      retVal = RGFiles.util.writeFile( RGFiles.util.readFile( src ) or "", dst ) 
-   end      
-   return retVal
-end
---]]
 
