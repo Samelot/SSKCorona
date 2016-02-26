@@ -596,6 +596,76 @@ misc.easyRemoteImage = function( curImg, fileName, imageURL, baseDirectory )
 	)
 end
 
+-- 
+--
+function misc.createSlicedImage( group, path, x, y, width, height )
+    group = group or display.currentStage
+    local slices = display.newGroup()
+    group:insert( slices )
+    local function cw( obj ) return obj.contentWidth end
+    local function ch( obj ) return obj.contentHeight end
+    local w2 = width/2
+    local h2 = height/2
+    local slice_1 = display.newImage( slices, path .. "/slice_1.png", 0, 0  )
+    local slice_2 = display.newImage( slices, path .. "/slice_2.png", 0, 0  )
+    local slice_3 = display.newImage( slices, path .. "/slice_3.png", 0, 0  )
+    --
+    slice_1.anchorX = 0
+    slice_1.anchorY = 0
+    slice_1.x = -w2
+    slice_1.y = -h2
+    --
+    slice_2.anchorY = 0
+    slice_2.y = -h2
+    --
+    slice_3.anchorX = 1
+    slice_3.anchorY = 0
+    slice_3.x = w2
+    slice_3.y = -h2
+    --
+    local slice_4 = display.newImage( slices, path .. "/slice_4.png", 0, 0  )
+    local slice_5 = display.newImage( slices, path .. "/slice_5.png", 0, 0  )
+    local slice_6 = display.newImage( slices, path .. "/slice_6.png", 0, 0  )
+    --
+    slice_4.anchorX = 0
+    slice_4.x = -w2
+    --
+    slice_6.anchorX = 1
+    slice_6.x = w2
+    
+    --
+    local slice_7 = display.newImage( slices, path .. "/slice_7.png", 0, 0  )
+    local slice_8 = display.newImage( slices, path .. "/slice_8.png", 0, 0  )
+    local slice_9 = display.newImage( slices, path .. "/slice_9.png", 0, 0  )
+    --
+    slice_7.anchorX = 0
+    slice_7.anchorY = 1
+    slice_7.x = -w2
+    slice_7.y = h2
+    --
+    slice_8.anchorY = 1
+    slice_8.y = h2
+    --
+    slice_9.anchorX = 1
+    slice_9.anchorY = 1
+    slice_9.x = w2
+    slice_9.y = h2
+
+    local wscale = (width - (cw(slice_1) + cw(slice_3)))/cw(slice_2)
+    local hscale = (height - (ch(slice_2) + ch(slice_8)))/ch(slice_5)
+    slice_2:scale( wscale, 1 )
+    slice_4:scale( 1, hscale )
+    slice_5:scale( wscale, hscale )
+    slice_6:scale( 1, hscale )
+    slice_8:scale( wscale, 1 )
+
+
+    slices.x = x
+    slices.y = y
+    return slices
+end
+
+
 -- ========================================================================
 function misc.oleft( obj ) 
 	if( obj.anchorX == 0 ) then
@@ -686,72 +756,6 @@ function misc.belowY( obj, params )
 end
 
 
-function misc.createSlicedImage( group, path, x, y, width, height )
-    group = group or display.currentStage
-    local slices = display.newGroup()
-    group:insert( slices )
-    local function cw( obj ) return obj.contentWidth end
-    local function ch( obj ) return obj.contentHeight end
-    local w2 = width/2
-    local h2 = height/2
-    local slice_1 = display.newImage( slices, path .. "/slice_1.png", 0, 0  )
-    local slice_2 = display.newImage( slices, path .. "/slice_2.png", 0, 0  )
-    local slice_3 = display.newImage( slices, path .. "/slice_3.png", 0, 0  )
-    --
-    slice_1.anchorX = 0
-    slice_1.anchorY = 0
-    slice_1.x = -w2
-    slice_1.y = -h2
-    --
-    slice_2.anchorY = 0
-    slice_2.y = -h2
-    --
-    slice_3.anchorX = 1
-    slice_3.anchorY = 0
-    slice_3.x = w2
-    slice_3.y = -h2
-    --
-    local slice_4 = display.newImage( slices, path .. "/slice_4.png", 0, 0  )
-    local slice_5 = display.newImage( slices, path .. "/slice_5.png", 0, 0  )
-    local slice_6 = display.newImage( slices, path .. "/slice_6.png", 0, 0  )
-    --
-    slice_4.anchorX = 0
-    slice_4.x = -w2
-    --
-    slice_6.anchorX = 1
-    slice_6.x = w2
-    
-    --
-    local slice_7 = display.newImage( slices, path .. "/slice_7.png", 0, 0  )
-    local slice_8 = display.newImage( slices, path .. "/slice_8.png", 0, 0  )
-    local slice_9 = display.newImage( slices, path .. "/slice_9.png", 0, 0  )
-    --
-    slice_7.anchorX = 0
-    slice_7.anchorY = 1
-    slice_7.x = -w2
-    slice_7.y = h2
-    --
-    slice_8.anchorY = 1
-    slice_8.y = h2
-    --
-    slice_9.anchorX = 1
-    slice_9.anchorY = 1
-    slice_9.x = w2
-    slice_9.y = h2
-
-    local wscale = (width - (cw(slice_1) + cw(slice_3)))/cw(slice_2)
-    local hscale = (height - (ch(slice_2) + ch(slice_8)))/ch(slice_5)
-    slice_2:scale( wscale, 1 )
-    slice_4:scale( 1, hscale )
-    slice_5:scale( wscale, hscale )
-    slice_6:scale( 1, hscale )
-    slice_8:scale( wscale, 1 )
-
-
-    slices.x = x
-    slices.y = y
-    return slices
-end
 
 
 
