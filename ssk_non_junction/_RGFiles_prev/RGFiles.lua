@@ -34,33 +34,6 @@ local RGFiles = {}
 -- =====================================================
 require("ssk.RGFiles.RGFiles_util").attach( RGFiles )
 
--- OSX Discovery Utility
-local function getUserName()
-  -- 1. Try the $USER variable
-  local user = os.getenv("USER")  
-  if( user ) then 
-    print("Found $USER == " .. tostring( user ) )
-    return user
-  end
-  -- 2. Try extracting it from the $HOME path
-  local user = os.getenv("HOME")
-  if( user ) then 
-    print("Found $HOME == ", user )
-    user = string.split(user, "/")
-    user = user[#user]
-    if( user ) then 
-      print("Got USER from $HOME == " .. tostring( user ) )
-      return user
-    end
-  end
-  -- 3. Try the $LOGNAME variable
-  local user = os.getenv("LOGNAME")  
-  if( user ) then 
-    print("Got USER from $LOGNAME == " .. tostring( user ) )
-    return user
-  end
-  return nil
-end
 
 -- =====================================================
 -- Discover full root paths to:
@@ -96,12 +69,7 @@ if( onWin ) then
       end
 	end
 elseif( onOSX ) then
-	RGFiles.myDocumentsRoot = getUserName()
-	if( not RGFiles.myDocumentsRoot ) then
-		RGFiles.myDocumentsRoot = "TBD"
-	else
-		RGFiles.myDocumentsRoot = "/Users/" .. RGFiles.myDocumentsRoot .. "/" .. "Documents"		
-	end
+   RGFiles.myDocumentsRoot = "TBD"
 end
 RGFiles.myDocumentsRoot = RGFiles.myDocumentsRoot .. pathSep
 --
@@ -116,12 +84,7 @@ if( onWin ) then
 		RGFiles.desktopRoot = RGFiles.desktopRoot .. "Desktop"
 	end
 elseif( onOSX ) then
-	RGFiles.desktopRoot = getUserName()
-	if( not RGFiles.desktopRoot ) then
-		RGFiles.desktopRoot = "TBD"
-	else
-		RGFiles.desktopRoot = "/Users/" .. RGFiles.desktopRoot .. "/" .. "Desktop"
-	end
+   RGFiles.desktopRoot = "TBD"
 end
 RGFiles.desktopRoot = RGFiles.desktopRoot .. pathSep 
 
@@ -133,7 +96,6 @@ require("ssk.RGFiles.RGFiles_systemDocuments").attach( RGFiles )
 require("ssk.RGFiles.RGFiles_systemResource").attach( RGFiles )
 require("ssk.RGFiles.RGFiles_systemTemporary").attach( RGFiles )
 require("ssk.RGFiles.RGFiles_desktop").attach( RGFiles )
-require("ssk.RGFiles.RGFiles_tests").attach( RGFiles )
 
 --table.dump( RGFiles.desktop )
 ----------------------------------------------------------------------

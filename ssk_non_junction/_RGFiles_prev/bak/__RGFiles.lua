@@ -1,6 +1,6 @@
 -- EFM clipboard? - http://www.extrabit.com/copyfilenames/
 -- =============================================================
--- Copyright Roaming Gamer, LLC. 2009-2015
+-- Copyright Roaming Gamer, LLC. 2009-2016
 -- =============================================================
 -- 								License
 -- =============================================================
@@ -80,15 +80,15 @@ end
 function RGFiles.getPath( path, base )
    base = base or RGFiles.DocumentsDirectory
    local root
-   if( base == RGFiles.DocumentsDirectory ) then
-      root = private.documentRoot      
+   if( base == RGFiles.DocumentsDirectory ) then      
+      root = private.documentRoot
    elseif( base == system.ResourceDirectory ) then
       root = private.resourceRoot
    elseif( base == RGFiles.TemporaryDirectory ) then
       root = private.temporaryRoot
    elseif( base == RGFiles.DesktopDirectory ) then
       root = private.desktopPath
-   elseif( base == RGFiles.MyDocumentsDirectory ) then
+   elseif( base == RGFiles.MyDocumentsDirectory ) then      
       root = private.myDocumentsPath
    else 
       root = base
@@ -99,13 +99,38 @@ function RGFiles.getPath( path, base )
    return fullPath
 end
 
+--
+-- explore( path ) -- Open file browser to explore a specific path.
+--
+-- http://www.howtogeek.com/howto/15781/open-a-file-browser-from-your-current-command-promptterminal-directory/
+function RGFiles.explore( path )
+   local retVal
+   if(onWin) then
+      local command = "explorer " .. '"' .. path  .. '"'
+      --print(command)
+      retVal =  (os.execute( command ) == 0)
+   
+   elseif( onOSX ) then
+      local command = "open " .. '"' .. path  .. '"'
+      --print(command)
+      retVal =  (os.execute( command ) == 0)
+   
+   else -- Must be on Mobile device      
+      -- print("No file explorer for Mobile devices (yet).""
+      return false
+   end   
+   
+   return retVal
+
+end
+
 
 -- =====================================================
 -- System Standard Folders
 -- =====================================================
 private.resourceRoot = system.pathForFile('main.lua', system.ResourceDirectory)
 private.documentRoot = system.pathForFile('', system.DocumentsDirectory) .. pathSep
-if( not resourceRoot ) then
+if( not private.resourceRoot ) then
 	private.resourceRoot = ""
 else
 	private.resourceRoot = private.resourceRoot:sub(1, -9)
@@ -182,7 +207,7 @@ function RGFiles.copyFile( src, dst )
    else -- Must be on Mobile device
       local data = RGFiles.readFileDirect( src ) or ""
       --print("Mobile Copy via read() ... write()")
-      retVal = RGFiles.writeFileDirect( dst, data ) 
+      retVal = RGFiles.writeFileDirect( data, dst ) 
 	end   
    
 	return retVal
@@ -235,6 +260,10 @@ function RGFiles.removeFolder( path )
    
 	return retVal
 end	
+
+function RGFiles.makeFolder( path )
+   return lfs.mkdir( path )
+end   
 
 RGFiles.moveFolder   = os.rename
 RGFiles.renameFolder = os.rename
@@ -335,6 +364,7 @@ function RGFiles.readFile( path, base )
 end
 
 function RGFiles.writeFile( dataToWrite, path, base )
+   --print( dataToWrite, path, base )
    path = RGFiles.getPath( path, base )
    --print(path)
 
@@ -394,14 +424,31 @@ function RGFiles.readFileDirect( path )
    return nil
 end
 
-function RGFiles.writeFileDirect( path, content )
+function RGFiles.writeFileDirect( content, path )
 	local file = io.open( path, "wb" )
 	if file then
-		file:write( data )
+		file:write( content )
 		io.close( file )
 		file = nil
 	end
 end
+
+function RGFiles.readFileTableDirect( path )
+   local fileContents = {}
+   local f=io.open(path,"r")
+   if (f == nil) then 
+      return fileContents
+   end
+
+   for line in f:lines() do
+      fileContents[ #fileContents + 1 ] = line
+   end
+
+   io.close( f )
+
+   return fileContents
+end
+
 
 
 
@@ -546,7 +593,6 @@ end
 if( _G.ssk ) then
 	ssk.RGFiles = RGFiles
 else 
-	_G.ssk = { RGFiles = RGFiles }
 	_G.ssk = { RGFiles = RGFiles }
 end
 

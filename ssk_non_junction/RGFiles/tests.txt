@@ -1,0 +1,225 @@
+--[[
+local srcFolder = rgFiles.getDocumentsPath( "bumbled" )
+local dstFolder = rgFiles.getDocumentsPath( "bumbled2" )
+
+print( srcFolder, dstFolder )
+
+--rgFiles.directOSCopy( srcFolder, dstFolder )
+
+local tmp = rgFiles.findAllFiles( srcFolder )
+
+table.print_r( tmp )
+--]]
+
+-- Test Correct Generation of Path Names 
+--
+--[[
+print( " DEFAULT: " .. RGFiles.getPath( "bob/rocks/it.txt" ) )
+print( "    DOCS: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.DocumentsDirectory ) )
+print( "RESOURCE: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.ResourceDirectory ) )
+print( "    TEMP: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.TemporaryDirectory ) )
+print( " DESKTOP: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.DesktopDirectory ) )
+print( " MY DOCS: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.MyDocumentsDirectory ) )
+print( " OS DIRECT: " .. RGFiles.getPath( "bob/rocks/it.txt", "x:/" ) )
+--]]
+
+--
+-- File Tests
+--
+local src      = RGFiles.getPath( "bob.txt", RGFiles.DocumentsDirectory )
+local dst_doc  = RGFiles.getPath( "goobers.txt", RGFiles.DocumentsDirectory )
+local dst_tmp  = RGFiles.getPath( "goobers.txt", RGFiles.TemporaryDirectory )
+local dst_dsk  = RGFiles.getPath( "goobers.txt", RGFiles.DesktopDirectory )
+local dst_mdoc = RGFiles.getPath( "goobers.txt", RGFiles.MyDocumentsDirectory )
+local dst_drct = RGFiles.getPath( "goobers.txt", "g:/"  )
+
+--
+-- Test File Copy
+--
+--[[
+RGFiles.copyFile( src, dst_doc )
+--RGFiles.copyFile( src, dst_tmp )
+--RGFiles.copyFile( src, dst_dsk )
+--RGFiles.copyFile( src, dst_mdoc )
+--RGFiles.copyFile( src, dst_drct )
+--]]
+
+
+--
+-- Test File Removal
+--
+--[[
+RGFiles.removeFile( dst_doc )
+RGFiles.removeFile( dst_tmp )
+RGFiles.removeFile( dst_dsk )
+RGFiles.removeFile( dst_mdoc )
+RGFiles.removeFile( dst_drct )
+--]]
+
+--
+-- Test File Smart Removal
+--
+--RGFiles.rm( dst_doc )
+
+--
+-- Folder Tests
+--
+local fsrc      = RGFiles.getPath( "bumbled", RGFiles.DocumentsDirectory )
+local fsrc2     = RGFiles.getPath( "bumbled", "g:/"  )
+local fdst_doc  = RGFiles.getPath( "bumbled2", RGFiles.DocumentsDirectory )
+local fdst_tmp  = RGFiles.getPath( "bumbled2", RGFiles.TemporaryDirectory )
+local fdst_dsk  = RGFiles.getPath( "bumbled2", RGFiles.DesktopDirectory )
+local fdst_mdoc = RGFiles.getPath( "bumbled2", RGFiles.MyDocumentsDirectory )
+local fdst_drct = RGFiles.getPath( "bumbled2", "g:/"  )
+
+--
+-- Test Folder Copy
+--
+----[[
+--RGFiles.copyFolder( fsrc, fdst_doc )
+--RGFiles.copyFolder( fsrc, fdst_tmp )
+--RGFiles.copyFolder( fsrc, fdst_dsk )
+--RGFiles.copyFolder( fsrc, fdst_mdoc )
+--RGFiles.copyFolder( fsrc, fdst_drct )
+--]]
+
+
+
+--
+-- Test Folder Removal
+--
+--[[
+print( RGFiles.removeFolder( fdst_doc ) )
+RGFiles.removeFolder( fdst_tmp )
+RGFiles.removeFolder( fdst_dsk )
+RGFiles.removeFolder( fdst_mdoc )
+RGFiles.removeFolder( fdst_drct )
+--]]
+
+--
+-- Test Folder Smart Removal
+--
+--RGFiles.rm( fdst_doc )
+--RGFiles.cp( fsrc, fdst_doc )
+
+
+
+
+local RGFiles        = ssk.RGFiles
+--[[
+local srcFolder = rgFiles.getDocumentsPath( "bumbled" )
+local dstFolder = rgFiles.getDocumentsPath( "bumbled2" )
+
+print( srcFolder, dstFolder )
+
+--rgFiles.directOSCopy( srcFolder, dstFolder )
+
+local tmp = rgFiles.findAllFiles( srcFolder )
+
+table.print_r( tmp )
+--]]
+
+-- Test Correct Generation of Path Names 
+--
+--[[
+print( " DEFAULT: " .. RGFiles.getPath( "bob/rocks/it.txt" ) )
+print( "    DOCS: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.DocumentsDirectory ) )
+print( "RESOURCE: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.ResourceDirectory ) )
+print( "    TEMP: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.TemporaryDirectory ) )
+print( " DESKTOP: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.DesktopDirectory ) )
+print( " MY DOCS: " .. RGFiles.getPath( "bob/rocks/it.txt", RGFiles.MyDocumentsDirectory ) )
+print( " OS DIRECT: " .. RGFiles.getPath( "bob/rocks/it.txt", "x:/" ) )
+--]]
+
+--
+-- File Tests
+--
+local src      = RGFiles.getPath( "bob.txt", RGFiles.DocumentsDirectory )
+local dst_doc  = RGFiles.getPath( "goobers.txt", RGFiles.DocumentsDirectory )
+local dst_tmp  = RGFiles.getPath( "goobers.txt", RGFiles.TemporaryDirectory )
+local dst_dsk  = RGFiles.getPath( "goobers.txt", RGFiles.DesktopDirectory )
+local dst_mdoc = RGFiles.getPath( "goobers.txt", RGFiles.MyDocumentsDirectory )
+local dst_drct = RGFiles.getPath( "goobers.txt", "g:/"  )
+
+--
+-- Test File Copy
+--
+--[[
+RGFiles.copyFile( src, dst_doc )
+--RGFiles.copyFile( src, dst_tmp )
+--RGFiles.copyFile( src, dst_dsk )
+--RGFiles.copyFile( src, dst_mdoc )
+--RGFiles.copyFile( src, dst_drct )
+--]]
+
+
+--
+-- Test File Removal
+--
+--[[
+RGFiles.removeFile( dst_doc )
+RGFiles.removeFile( dst_tmp )
+RGFiles.removeFile( dst_dsk )
+RGFiles.removeFile( dst_mdoc )
+RGFiles.removeFile( dst_drct )
+--]]
+
+--
+-- Test File Smart Removal
+--
+--RGFiles.rm( dst_doc )
+
+--
+-- Folder Tests
+--
+local fsrc      = RGFiles.getPath( "bumbled", RGFiles.DocumentsDirectory )
+local fsrc2     = RGFiles.getPath( "bumbled", "g:/"  )
+local fdst_doc  = RGFiles.getPath( "bumbled2", RGFiles.DocumentsDirectory )
+local fdst_tmp  = RGFiles.getPath( "bumbled2", RGFiles.TemporaryDirectory )
+local fdst_dsk  = RGFiles.getPath( "bumbled2", RGFiles.DesktopDirectory )
+local fdst_mdoc = RGFiles.getPath( "bumbled2", RGFiles.MyDocumentsDirectory )
+local fdst_drct = RGFiles.getPath( "bumbled2", "g:/"  )
+
+--
+-- Test Folder Copy
+--
+----[[
+--RGFiles.copyFolder( fsrc, fdst_doc )
+--RGFiles.copyFolder( fsrc, fdst_tmp )
+--RGFiles.copyFolder( fsrc, fdst_dsk )
+--RGFiles.copyFolder( fsrc, fdst_mdoc )
+--RGFiles.copyFolder( fsrc, fdst_drct )
+--]]
+
+--
+-- Test Folder Removal
+--
+--[[
+print( RGFiles.removeFolder( fdst_doc ) )
+RGFiles.removeFolder( fdst_tmp )
+RGFiles.removeFolder( fdst_dsk )
+RGFiles.removeFolder( fdst_mdoc )
+RGFiles.removeFolder( fdst_drct )
+--]]
+
+--
+-- Test Folder Smart Removal
+--
+--RGFiles.rm( fdst_doc )
+--RGFiles.cp( fsrc, fdst_doc )
+
+
+--local tmp = RGFiles.loadTable( "bubble.json"  )
+--table.print_r(tmp)
+--RGFiles.saveTable( tmp, "bubble.json", "G:/"   )
+
+RGFiles.writeFile( "This is a test\n", "binky.txt" )
+RGFiles.appendFile( "This is a test\n", "binky.txt" )
+RGFiles.appendFile( "This is a test\n", "binky.txt" )
+RGFiles.appendFile( "This is a test\n", "binky.txt" )
+
+table.dump(RGFiles.readFileTable( "binky.txt" ) )
+
+
+table.dump(RGFiles)
+
