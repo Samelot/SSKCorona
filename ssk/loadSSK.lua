@@ -55,6 +55,8 @@ local_require "ssk.RGPersist"
 local_require "ssk.RGEasyBench"
 local_require "ssk.RGMultiscroller"
 
+local_require "ssk.RGSizer" 
+
 local_require "ssk.RGEasyTextField"
 
 local_require "ssk.tools.tools"
