@@ -15,41 +15,7 @@
 ]]
 -- =============================================================
 
--- EFM - This should be achievable w/ a resize event and size re-calculation
---[[
-local statusBarStatus
-local display_setStatusBar = display.setStatusBar
--- display.setStatusBar()
---
-display.setStatusBar = function( setting )
-	statusBarStatus = setting
-	display_setStatusBar( setting )
-	if( setting == display.HiddenStatusBar and not onSimulator) then
-		_G.top = 0 - unusedHeight/2 - display.topStatusBarContentHeight
-	else
-		_G.top = 0 - unusedHeight/2
-	end
-end
-display.getStatusBar = function( )
-	return statusBarStatus
-end
---]]
---[[
-local display_newContainer = display.newContainer
-function display.newContainer( ... )
-	local container = display_newContainer( unpack( arg ) )
-	container.__isContainer = true
-	container.__isGroup 		= false
-	return container
-end
-local display_newGroup = display.newGroup
-function display.newGroup( ... )
-	local group = display_newGroup( unpack( arg ) )
-	group.__isContainer = false
-	group.__isGroup 	= true
-	return group
-end
---]]
+
 
 if( ssk.enableExperimental ) then
 
@@ -236,5 +202,44 @@ else
 	display.isValid = function ( obj )
 		return( obj and obj.removeSelf ~= nil )
 	end
-
 end
+
+-- ============================================================================
+-- OFFLINE EXPERIMENTAL CODE
+-- ============================================================================
+
+-- EFM - This should be achievable w/ a resize event and size re-calculation
+--[[
+local statusBarStatus
+local display_setStatusBar = display.setStatusBar
+-- display.setStatusBar()
+--
+display.setStatusBar = function( setting )
+	statusBarStatus = setting
+	display_setStatusBar( setting )
+	if( setting == display.HiddenStatusBar and not onSimulator) then
+		_G.top = 0 - unusedHeight/2 - display.topStatusBarContentHeight
+	else
+		_G.top = 0 - unusedHeight/2
+	end
+end
+display.getStatusBar = function( )
+	return statusBarStatus
+end
+--]]
+--[[
+local display_newContainer = display.newContainer
+function display.newContainer( ... )
+	local container = display_newContainer( unpack( arg ) )
+	container.__isContainer = true
+	container.__isGroup 		= false
+	return container
+end
+local display_newGroup = display.newGroup
+function display.newGroup( ... )
+	local group = display_newGroup( unpack( arg ) )
+	group.__isContainer = false
+	group.__isGroup 	= true
+	return group
+end
+--]]

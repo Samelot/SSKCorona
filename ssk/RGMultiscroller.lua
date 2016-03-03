@@ -189,8 +189,8 @@ multiScroller.createVScroller = function( group, params )
     end
     contentG.alignToBottom = function( self, offset )
         offset = offset or 0
-        --self.y = (h + unusedHeight/2) - self.contentHeight - offset
-        self.y = self.y0
+        self.y = (h + unusedHeight/2) - self.contentHeight - offset
+        --self.y = self.y0
     end
 
     contentG.alignToTopDelayed = function( self, delay, time, myEasing )
@@ -198,9 +198,9 @@ multiScroller.createVScroller = function( group, params )
         transition.to( self, { y = cTopActual, delay = delay or 0, time = time or 0, transition = myEasing or throwEasing } ) 
     end
     contentG.alignToBottomDelayed = function( self, delay, time, myEasing )
-        --print( self.y, cTopActual, offset )
-        --transition.to( self, { y = (h + unusedHeight/2) - self.contentHeight, delay = delay or 0, time = time or 0, transition = myEasing or throwEasing } ) 
-        transition.to( self, { y = self.y0, delay = delay or 0, time = time or 0, transition = myEasing or throwEasing } ) 
+        --print( "BOB", self.y, cTopActual, offset )
+        transition.to( self, { y = (h + unusedHeight/2) - self.contentHeight, delay = delay or 0, time = time or 0, transition = myEasing or throwEasing } ) 
+        --transition.to( self, { y = self.y0, delay = delay or 0, time = time or 0, transition = myEasing or throwEasing } ) 
     end
 
     -- Attach touch listenerers
@@ -809,7 +809,6 @@ end
 
 -- The function will only pass "ended" phases
 onContentTouch = function( self, event )
-
     if(dragMode ~= "click") then return false end
     if(event.phase ~= "ended") then return false end 
 

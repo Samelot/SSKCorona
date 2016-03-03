@@ -55,7 +55,6 @@ local hDragMin = 10
 
 -- Forward Declarations
 local createHScroller 
-local addFloater
 
 -- Callbacks/Functions
 local onOverlayTouch
@@ -186,18 +185,22 @@ multiScroller.createVScroller = function( group, params )
     
     contentG.alignToTop = function( self, offset )
         offset = offset or 0
-        self.y = cTopActual + offset
+        self.y = cTopActual + offset        
     end
     contentG.alignToBottom = function( self, offset )
         offset = offset or 0
         self.y = (h + unusedHeight/2) - self.contentHeight - offset
+        --self.y = self.y0
     end
 
     contentG.alignToTopDelayed = function( self, delay, time, myEasing )
+        --print( self.y, cTopActual, offset )
         transition.to( self, { y = cTopActual, delay = delay or 0, time = time or 0, transition = myEasing or throwEasing } ) 
     end
     contentG.alignToBottomDelayed = function( self, delay, time, myEasing )
+        --print( "BOB", self.y, cTopActual, offset )
         transition.to( self, { y = (h + unusedHeight/2) - self.contentHeight, delay = delay or 0, time = time or 0, transition = myEasing or throwEasing } ) 
+        --transition.to( self, { y = self.y0, delay = delay or 0, time = time or 0, transition = myEasing or throwEasing } ) 
     end
 
     -- Attach touch listenerers
@@ -212,7 +215,6 @@ multiScroller.createVScroller = function( group, params )
 
     -- Add methods for adding horizontal scroller
     contentG.createHScroll = createHScroller
-    contentG.addFloater = addFloater
 
     local function capMovement()
         if( contentG == nil or contentG.removeSelf == nil ) then return end
@@ -598,374 +600,6 @@ createHScroller = function( self, y, height, params )
     return contentG
 end
 
--- Floaters:
---[[
-
-Style 1 - 
-* yMin - Top abutting top of screen.
-* yMax - Initial position by default.
-
-Style 2 - 
-* yMin - Bottom abutting top of screen.
-* yMax - Initial position by default.
-
-Style 3 - Same as style 1, but adjusts yMin to yMin + partner height if partner is visible.
-Style 4 - Same as style 2, but adjusts yMin to yMin + partner height if partner is visible.
-
-Style 5 - Same as style 2, but adjusts yMin to yMin - partner height if partner is visible.
-Style 6 - Same as style 2, but adjusts yMin to yMin - partner height if partner is visible.
-
-]]
-local mover1
-local mover2
-local mover3
-
-addFloater = function( self, floater, params )
-    params = params or {}
-    params.style            = params.style or 1
-    params.ratio            = params.ratio or 1
-
-    params.yMinOffset       = params.yMinOffset or 0
-    params.y0               = params.y0 or floater.y
-    params.ignoreRebound    = fnn(params.ignoreRebound, true)
-    params.ignoreReboundDown = fnn(params.ignoreReboundDown, true)
-
-    floater._floatTarget = self
-    floater._floatParams = params
-
-    if(params.style == 1) then
-        if(params.frame) then
-            params.yMin     = -(params.frame.y-params.frame.contentHeight/2) - unusedHeight/2  + params.yMinOffset
-        else
-            params.yMin     = (params.yMin or floater.contentHeight/2) - unusedHeight/2   + params.yMinOffset
-        end     
-        params.yMax         = params.yMax or floater.y
-        floater._move       = mover1
-        floater._ly         = self.y
-        --print("min/max ", params.yMin,params.yMax)
-    
-    elseif(params.style == 2) then
-        if(params.frame) then
-            params.yMin     = -(params.frame.y+params.frame.contentHeight/2) - unusedHeight/2  + params.yMinOffset
-        else
-            params.yMin     = (params.yMin or floater.contentHeight/2) - unusedHeight/2  + params.yMinOffset
-        end     
-        params.yMax         = params.yMax or floater.y
-        floater._move       = mover1
-        floater._ly         = self.y
-        --print("min/max ", params.yMin,params.yMax)
-    
-    elseif(params.style == 3) then
-        if(params.frame) then
-            params.yMin     = -(params.frame.y-params.frame.contentHeight/2) - unusedHeight/2  + params.yMinOffset 
-        else
-            params.yMin     = (params.yMin or floater.contentHeight/2) - unusedHeight/2  + params.yMinOffset 
-        end     
-        params.yMax         = params.yMax or floater.y
-        floater._move       = mover2
-        floater._ly         = self.y
-        --print("min/max ", params.yMin,params.yMax)
-    
-    elseif(params.style == 4) then
-        if(params.frame) then
-            params.yMin     = -(params.frame.y+params.frame.contentHeight/2) - unusedHeight/2  + params.yMinOffset
-        else
-            params.yMin     = (params.yMin or floater.contentHeight/2) - unusedHeight/2  + params.yMinOffset 
-        end     
-        params.yMax         = params.yMax or floater.y
-        floater._move       = mover2
-        floater._ly         = self.y
-        --print("min/max ", params.yMin,params.yMax)
-
-    elseif(params.style == 5) then
-        if(params.frame) then
-            params.yMin     = -(params.frame.y-params.frame.contentHeight/2) - unusedHeight/2  + params.yMinOffset 
-        else
-            params.yMin     = (params.yMin or floater.contentHeight/2) - unusedHeight/2  + params.yMinOffset 
-        end     
-        params.yMax         = params.yMax or floater.y
-        floater._move       = mover3
-        floater._ly         = self.y
-        --print("min/max ", params.yMin,params.yMax)
-    
-    elseif(params.style == 6) then
-        if(params.frame) then
-            params.yMin     = -(params.frame.y+params.frame.contentHeight/2) - unusedHeight/2  + params.yMinOffset
-        else
-            params.yMin     = (params.yMin or floater.contentHeight/2) - unusedHeight/2 + params.yMinOffset 
-        end     
-        params.yMax         = params.yMax or floater.y
-        floater._move       = mover3
-        floater._ly         = self.y
-        --print("min/max ", params.yMin,params.yMax)
-
-    end
-
-    local enterFrame
-    enterFrame = function( event )
-        if( not self or self.removeSelf == nil or 
-            not floater or floater.removeSelf == nil ) then
-            ignore( "enterFrame", enterFrame )
-            return
-        end
-        if( self.isActive ) then
-            floater._move( floater, self )
-        end
-    end
-
-    listen( "enterFrame", enterFrame )
-
-    --listen( "onVScroll", floater )
-end
-
--- moveFloat2 adjusts own minY if another bar is visible and alpha > 0
-
-local function isShowing( obj )
-    local showing = (obj.isVisible == true and obj.alpha > 0)
-    local parent = obj.parent
-    while(showing and parent) do
-        showing = showing and (parent.isVisible == true and parent.alpha > 0)
-        parent = parent.parent
-    end
-    return showing
-end
-
-mover1 = function( floater, target )
-    local params        = floater._floatParams
-    local master        = params.master
-
-    if( floater._ly == nil ) then
-        floater._ly = target.y
-        return
-    end
-
-    local dy =  target.y - floater._ly
-    floater._ly = target.y
-
-    -- Target changed, start tracking new target and skip one round of updates.
-    if( floater._lastTarget ~= target ) then
-        floater._lastTarget = target
-
-        -- If this floater has a 'master' object, ensure that the 
-        -- currently re-activated target is not aligned below
-        -- the master's bottom edge
-        if( master ) then
-            local mo = params.masterOffset or 0
-            local minY = floater.y + master.y + master.contentHeight/2
-
-            if( isShowing( master ) == false ) then
-                --mo = 0
-                --minY = floater.y + master.y - master.contentHeight/2
-            end
-
-            if(target.y > minY) then
-                target.y = minY + mo
-            end
-
-            --print("TARGET CHANGED ", floater, target, master, target.y, mo, minY)         
-            if(target:aboveBottom()) then
-                print("Aligning to bottom")
-                target:alignToBottomDelayed(30, 0, easing.linear ) 
-            end
-        end
-
-        floater._ly = nil
-
-        return
-    end
-
-
-
---print(floater, floater._ly, getTimer())
-
-    if( dy == 0 ) then return end
-
-    local ratio         = params.ratio
-    local ignoreRebound = params.ignoreRebound
-    local ignoreReboundDown = params.ignoreReboundDown
-    
-    -- Only move while not rebounding (unless explicitly allowed)
-    if(ignoreRebound == false or target._rebounding == false) then
-        if(dy > 0) then
-            floater.y = floater.y + dy
-        else
-            floater.y = floater.y + dy * ratio
-        end
-    elseif(ignoreReboundDown == false) then
-        if(dy > 0) then
-            floater.y = floater.y + dy
-        end
-    end
-
-    -- Check for movment breaches
-    if( floater.y < params.yMin ) then
-        --print("min ",round(floater.y), params.yMin, params.yMax, getTimer())
-        floater.y = params.yMin
-    elseif( floater.y > params.yMax ) then
-        --print("max ",round(floater.y), params.yMin, params.yMax, getTimer())
-        floater.y = params.yMax
-    end
-end
-
-mover2 = function( floater, target )
-    local params        = floater._floatParams
-    local master        = params.master
-
-    if( floater._ly == nil ) then
-        floater._ly = target.y
-        return
-    end
-
-    local dy =  target.y - floater._ly
-    floater._ly = target.y
-
-    -- Target changed, start tracking new target and skip one round of updates.
-    if( floater._lastTarget ~= target ) then
-        floater._lastTarget = target
-
-        -- If this floater has a 'master' object, ensure that the 
-        -- currently re-activated target is not aligned below
-        -- the master's bottom edge
-        if( master ) then
-            local mo = params.masterOffset or 0
-            local minY = floater.y + master.y + master.contentHeight/2
-
-            if( isShowing( master ) == false ) then
-                --mo = 0
-                --minY = floater.y + master.y - master.contentHeight/2
-            end
-
-            if(target.y >minY) then
-                target.y = minY + mo
-            end
-        end
-
-        --print("TARGET CHANGED ", floater, target, master, target.y, mo, minY)         
-        if(target:aboveBottom()) then
-            print("Aligning to bottom")
-            target:alignToBottomDelayed(30, 0, easing.linear ) 
-        end
-        floater._ly = nil
-
-        return
-    end
-
-    if( dy == 0 ) then return end
-
-    local ratio         = params.ratio
-    local ignoreRebound = params.ignoreRebound
-    local ignoreReboundDown = params.ignoreReboundDown
-    local partner       = params.partner
-
-    -- Only move while not rebounding (unless explicitly allowed)
-    if(ignoreRebound == false or target._rebounding == false) then
-        if(dy > 0) then
-            floater.y = floater.y + dy
-        else
-            floater.y = floater.y + dy * ratio
-        end
-    elseif(ignoreReboundDown == false) then
-        if(dy > 0) then
-            floater.y = floater.y + dy
-        end
-    end
-
-    local yMin = params.yMin
-    if(isShowing(partner)) then
-        yMin = yMin + partner.contentHeight
-    end
-
-    -- Check for movment breaches
-    if( floater.y < yMin ) then
-        --print("min ",round(floater.y), params.yMin, params.yMax, getTimer())
-        floater.y = yMin
-    elseif( floater.y > params.yMax ) then
-        --print("max ",round(floater.y), params.yMin, params.yMax, getTimer())
-        floater.y = params.yMax
-    end
-end
-
-mover3 = function( floater, target )
-    local params        = floater._floatParams
-    local master        = params.master
-
-    if( floater._ly == nil ) then
-        floater._ly = target.y
-        return
-    end
-
-    local dy =  target.y - floater._ly
-    floater._ly = target.y
-
-    -- Target changed, start tracking new target and skip one round of updates.
-    if( floater._lastTarget ~= target ) then
-        floater._lastTarget = target
-
-        -- If this floater has a 'master' object, ensure that the 
-        -- currently re-activated target is not aligned below
-        -- the master's bottom edge
-        if( master ) then
-            local mo = params.masterOffset or 0
-            local minY = floater.y + master.y + master.contentHeight/2
-
-            if( isShowing( master ) == false ) then
-                --mo = 0
-                --minY = floater.y + master.y - master.contentHeight/2
-            end
-
-            if(target.y >minY) then
-                target.y = minY + mo
-            end
-        end
-
-        --print("TARGET CHANGED ", floater, target, master, target.y, mo, minY)         
-        if(target:aboveBottom()) then
-            print("Aligning to bottom")
-            target:alignToBottomDelayed(30, 0, easing.linear ) 
-        end
-
-        floater._ly = nil
-
-        return
-    end
-    
-    if( dy == 0 ) then return end
-
-    local ratio         = params.ratio
-    local ignoreRebound = params.ignoreRebound
-    local ignoreReboundDown = params.ignoreReboundDown
-    local partner       = params.partner
-
-    -- Only move while not rebounding (unless explicitly allowed)
-    if(ignoreRebound == false or target._rebounding == false) then
-        if(dy > 0) then
-            floater.y = floater.y + dy
-        else
-            floater.y = floater.y + dy * ratio
-        end
-    elseif(ignoreReboundDown == false) then
-        if(dy > 0) then
-            floater.y = floater.y + dy
-        end
-    end
-
-    local yMin = params.yMin
-    if(isShowing(partner)) then
-        yMin = yMin - partner.contentHeight
-    end
-    --print(params.yMin, yMin, partner.contentHeight, isShowing(partner))
-
-    -- Check for movment breaches
-    if( floater.y < yMin ) then
-        --print("min ",round(floater.y), params.yMin, params.yMax, getTimer())
-        floater.y = yMin
-    elseif( floater.y > params.yMax ) then
-        --print("max ",round(floater.y), params.yMin, params.yMax, getTimer())
-        floater.y = params.yMax
-    end
-end
-
-
 -- Callbacks/Functions
 --EFM local throwing = false
 onOverlayTouch = function( self, event  )
@@ -1175,7 +809,6 @@ end
 
 -- The function will only pass "ended" phases
 onContentTouch = function( self, event )
-
     if(dragMode ~= "click") then return false end
     if(event.phase ~= "ended") then return false end 
 

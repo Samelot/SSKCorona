@@ -61,14 +61,15 @@ end
 -- 
 -- repairPath( path ) -- Converts path to 'OS' correct style of back- or forward- slashes
 -- 
-function util.repairPath( path, forceForward )
+function util.repairPath( path, forceForward )   
    if( onOSX or onAndroid or forceForward == true) then
       path = strGSub( path, "\\", "/" )
       path = path strGSub( path, "//", "/" )
    elseif( onWin ) then
-      path = path strGSub( path, "//", "/" )
+      path = strGSub( path, "//", "/" )
       path = strGSub( path, "/", "\\" )
    end
+   path = strGSub( path, "//", "/" )
    return path
 end
 
@@ -317,13 +318,14 @@ end
 function util.getFilesInFolder( path )
    if path then      
       local files = {}     
-      for file in lfs.dir( path ) do      
+      for file in lfs.dir( path ) do 
          if file ~= "." and file ~= ".." and file ~= ".DS_Store" then
             files[ #files + 1 ] = file
          end         
       end
       return files      
    end   
+   return nil
 end
 
 --
