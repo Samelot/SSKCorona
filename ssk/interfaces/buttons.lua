@@ -131,6 +131,8 @@ function buttons:newButton( parentGroup, params )
    buttonInstance.labelSize     = fnn(buttonInstance.labelSize, 20)
    buttonInstance.labelColor    = fnn(buttonInstance.labelColor, {1,1,1,1})
    buttonInstance.selLabelColor = fnn(buttonInstance.selLabelColor, buttonInstance.labelColor)
+   buttonInstance.labelColor[4]     = buttonInstance.labelColor[4]  or 1
+   buttonInstance.selLabelColor[4] = buttonInstance.selLabelColor[4]  or 1
 
    buttonInstance.labelFont         = fnn(buttonInstance.labelFont, native.systemFontBold)
    buttonInstance.labelOffset       = fnn(buttonInstance.labelOffset, {0,0})

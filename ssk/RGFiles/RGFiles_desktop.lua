@@ -66,15 +66,16 @@ end
 --
 -- http://www.howtogeek.com/howto/15781/open-a-file-browser-from-your-current-command-promptterminal-directory/
 function desktop.explore( path )
+   path = RGFiles.util.repairPath( path )
    local retVal = false
    if(onWin) then
       local command = "explorer " .. '"' .. path  .. '"'
-      --print(command)
+      print(command)
       retVal =  (os.execute( command ) == 0)
    
    elseif( onOSX ) then
       local command = "open " .. '"' .. path  .. '"'
-      --print(command)
+      print(command)
       retVal =  (os.execute( command ) == 0)
    end   
    return retVal
