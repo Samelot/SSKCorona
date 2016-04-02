@@ -15,21 +15,7 @@
 ]]
 -- =============================================================
 
--- EFM bug - slider chained cb not called if finger off knob during release
--- EFM add 'auto-fit' labelText option so long labelText is scaled/shrunk to fit?
-
 local fnn
-if( not _G.fnn ) then
-   fnn = function( ... ) 
-      for i = 1, #arg do
-         local theArg = arg[i]
-         if(theArg ~= nil) then return theArg end
-      end
-      return nil
-   end
-else
-   fnn = _G.fnn
-end
 
 local buttons = {}
 
@@ -47,27 +33,8 @@ end
 --        params - Parameters list. (See [ [ssk.buttons.params|ssk.buttons.params] ])
 -- ==
 function buttons:addButtonPreset( presetName, params )
-   local entry = {}
+   local entry = table.deepCopy( params )
    self.buttonPresetsCatalog[presetName] = entry
-
-   local copyParams = { "x", "y", "w", "h", "rotation",
-      "kw", "kh", "unselKnobImg", "selKnobImg",
-      "touchMask",  "touchOffset", 
-      "selRectFillColor", "unselRectFillColor",
-      "strokeWidth", "strokeColor", 
-      "unselStrokeWidth", "unselStrokeColor", "selStrokeWidth", "selStrokeColor", 
-      "selSliceSrc", "unselSliceSrc",
-      "unselImgSrc", "selImgSrc", "selImgFillColor", "unselImgFillColor",  "selKnobImgFillColor", "unselKnobImgFillColor", 
-      "buttonOverlayRectColor", "buttonOverlayImgSrc", "buttonOverlayFillColor",
-      "onPress", "onRelease", "onEvent", "buttonType", 
-      "pressSound", "releaseSound", "sound", "cornerRadius", "labelHorizAlign",
-      "baseFolder"
-   }
-
-   for i = 1, #copyParams do
-      local paramName = copyParams[i]
-      entry[paramName] = params[paramName]
-   end
 
    entry.touchMaskW     	= params.touchMaskW
    entry.touchMaskH     	= params.touchMaskH
@@ -85,8 +52,9 @@ function buttons:addButtonPreset( presetName, params )
    entry.baseFolder 	      = fnn(params.baseFolder, system.ResourceDirectory )
 
    entry.emboss 			   = fnn(params.emboss, false)
+   entry.embossColor       = fnn(params.embossColor, { highlight = { r = 1, g = 1, b =  1 }, 
+                                                       shadow = { r = 0, g = 0, b = 0 } } )
    entry.labelAnchorX		= fnn(params.labelAnchorX, 0.5)
-
 end
 
 -- ==
@@ -108,37 +76,35 @@ function buttons:newButton( parentGroup, params )
    local presetCatalogEntry  = self.buttonPresetsCatalog[buttonInstance.presetName]
 
    if(presetCatalogEntry) then
-      for k,v in pairs(presetCatalogEntry) do
-         buttonInstance[k] = v
-      end
+      table.deepCopy( presetCatalogEntry, buttonInstance )
    end
 
-   -- 2. Apply any passed params
-   if(params) then
-      for k,v in pairs(params) do
-         buttonInstance[k] = v
-      end
+   -- 2. Apply any passed params and override existing values
+   if( params ) then
+      table.deepCopy( params, buttonInstance )
    end
 
    -- 3. Ensure all 'required' values have something in them or assign defaults
-   buttonInstance.x            = fnn(buttonInstance.x, 0)
-   buttonInstance.y            = fnn(buttonInstance.y, 0)
-   buttonInstance.w            = fnn(buttonInstance.w, 178)
-   buttonInstance.h            = fnn(buttonInstance.h, 56)
-   buttonInstance.buttonType   = fnn(buttonInstance.buttonType, "push")
+   buttonInstance.x                 = fnn(buttonInstance.x, 0)
+   buttonInstance.y                 = fnn(buttonInstance.y, 0)
+   buttonInstance.w                 = fnn(buttonInstance.w, 178)
+   buttonInstance.h                 = fnn(buttonInstance.h, 56)
+   buttonInstance.buttonType        = fnn(buttonInstance.buttonType, "push")
 
-   buttonInstance.labelText     = fnn(buttonInstance.labelText, "")
-   buttonInstance.labelSize     = fnn(buttonInstance.labelSize, 20)
-   buttonInstance.labelColor    = fnn(buttonInstance.labelColor, {1,1,1,1})
-   buttonInstance.selLabelColor = fnn(buttonInstance.selLabelColor, buttonInstance.labelColor)
+   buttonInstance.labelText         = fnn(buttonInstance.labelText, "")
+   buttonInstance.labelSize         = fnn(buttonInstance.labelSize, 20)
+   buttonInstance.labelColor        = fnn(buttonInstance.labelColor, {1,1,1,1})
+   buttonInstance.selLabelColor     = fnn(buttonInstance.selLabelColor, buttonInstance.labelColor)
+   buttonInstance.labelColor[4]     = buttonInstance.labelColor[4]  or 1
+   buttonInstance.selLabelColor[4]  = buttonInstance.selLabelColor[4]  or 1
 
    buttonInstance.labelFont         = fnn(buttonInstance.labelFont, native.systemFontBold)
    buttonInstance.labelOffset       = fnn(buttonInstance.labelOffset, {0,0})
    buttonInstance.labelHorizAlign 	= fnn(buttonInstance.labelHorizAlign, "center" )
    buttonInstance.emboss            = fnn(buttonInstance.emboss, false)
 
-   buttonInstance.unselRectEn             = (buttonInstance.unselRectFillColor) and (not buttonInstance.unselImgSrc) and (not buttonInstance.unselSliceSrc)
-   buttonInstance.selRectEn               = (buttonInstance.selRectFillColor) and (not buttonInstance.selImgSrc) and (not buttonInstance.selSliceSrc)
+   buttonInstance.unselRectEn       = (buttonInstance.unselRectFillColor) and (not buttonInstance.unselImgSrc) and (not buttonInstance.unselSliceSrc)
+   buttonInstance.selRectEn         = (buttonInstance.selRectFillColor) and (not buttonInstance.selImgSrc) and (not buttonInstance.selSliceSrc)
 
    buttonInstance.isPressed    = false -- start off unpressed
 
@@ -392,23 +358,26 @@ function buttons:newButton( parentGroup, params )
          local a = fnn(buttonInstance.buttonOverlayFillColor[4], 1)
          buttonInstance.overlayImage:setFillColor(r,g,b,a)
       end
-
    end
 
    -- BUTTON TEXT
    local labelText 
    if(buttonInstance.emboss) then
-      labelText = display.newEmbossedText( buttonInstance.labelText, 0, 0, buttonInstance.labelFont, buttonInstance.labelSize, buttonInstance.labelColor )
+      labelText = display.newEmbossedText( buttonInstance.labelText, 0, 0, buttonInstance.labelFont, buttonInstance.labelSize )
    else
       labelText = display.newText( buttonInstance.labelText, 0, 0, buttonInstance.labelFont, buttonInstance.labelSize )
-   end	
+   end
+
+
    labelText.anchorX = buttonInstance.labelAnchorX or 0.5
 
    buttonInstance.myLabel = labelText
-   labelText:setFillColor( buttonInstance.labelColor[1], buttonInstance.labelColor[2], 
-      buttonInstance.labelColor[3], buttonInstance.labelColor[4] )
---EFM G2	labelText:setReferencePoint( display.CenterReferencePoint )
+   labelText:setFillColor(unpack(buttonInstance.labelColor))   
    buttonInstance:insert( labelText, true )
+
+   if(buttonInstance.emboss) then
+      labelText:setEmbossColor(buttonInstance.embossColor)
+   end
 
    if( buttonInstance.labelHorizAlign == "center" ) then
       labelText.x = buttonInstance.labelOffset[1]
@@ -1192,5 +1161,15 @@ function buttons:touch( params )
    end
    return false -- result
 end
+
+
+fnn = _G.fnn or 
+   function( ... ) 
+      for i = 1, #arg do
+         local theArg = arg[i]
+         if(theArg ~= nil) then return theArg end
+      end
+      return nil
+   end
 
 return buttons

@@ -18,12 +18,12 @@
 -- =============================================================
 -- Create ssk global if needed
 _G.ssk = _G.ssk or {}
-ssk.getVersion = function() return "13 DEC 2015" end
+ssk.getVersion = function() return "02 APR 2016" end
 
-ssk.__measureSSK			      	= false		-- Show how much memory is used by each module and all of SSK
+ssk.__measureSSK			    = false		-- Show how much memory is used by each module and all of SSK
 ssk.__enableAutoListeners	   	= true 		-- Enables automatic attachment of event listeners in extended display library
-ssk.enableExperimental		   	= false 		-- Enables experimental features (turn this off if you run into problems)
-ssk.__desktopMode		 	      	= true 		-- Running in a 'desktop' app, not mobile.
+ssk.enableExperimental		   	= false 	-- Enables experimental features (turn this off if you run into problems)
+ssk.__desktopMode		 	    = true 		-- Running in a 'desktop' app, not mobile.
 ssk.__adjustMeasureOnResize		= true 		-- When resize even occurs adjust screen mesurements.
 
 -- If measuring, get replacement 'require'
@@ -84,8 +84,6 @@ ssk.behaviors = local_require( "ssk.behaviors.behaviors" )
 --
 ssk.glock = require "ssk.extras.global_lock"
 --ssk.glock.lock( _G )
-
-
 
 -- Meaure Final Cost of SSK (if enabled)
 if( ssk.__measureSSK ) then require("ssk.measureSSK").summary() end

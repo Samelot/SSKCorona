@@ -227,12 +227,12 @@ display.getStatusBar = function( )
 	return statusBarStatus
 end
 --]]
---[[
+----[[
 local display_newContainer = display.newContainer
 function display.newContainer( ... )
 	local container = display_newContainer( unpack( arg ) )
 	container.__isContainer = true
-	container.__isGroup 		= false
+	container.__isGroup 	= true
 	return container
 end
 local display_newGroup = display.newGroup
