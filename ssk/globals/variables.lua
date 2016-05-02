@@ -103,31 +103,34 @@ calcMeasurementSpacing()
 -- =============================================================
 -- Environment
 -- =============================================================
-_G.onSimulator    = system.getInfo( "environment" ) == "simulator"
-_G.oniOS          = ( system.getInfo("platformName") == "iPhone OS") 
-_G.onAndroid      = ( system.getInfo("platformName") == "Android") 
-_G.onWinPhone     = (system.getInfo("platformName") == "WinPhone");
-_G.onOSX          = ( system.getInfo("platformName") == "Mac OS X")
-_G.onWin          = ( system.getInfo("platformName") == "Win")
-_G.onNook         = (system.getInfo("targetAppStore") == "nook");
-_G.onAmazon       = (system.getInfo("targetAppStore") == "amazon");
-_G.onAndroid      = _G.onAndroid or _G.onNook or _G.onAmazon
-_G.onDesktop      = ( not _G.onSimulator and ( _G.onOSX or _G.onWin ) )
-_G.onDevice       = ( _G.onAndroid or _G.oniOS )
+_G.onSimulator    = ( system.getInfo( "environment" ) == "simulator" )
+_G.oniOS          = ( system.getInfo("platformName") == "iPhone OS" ) 
+_G.onAndroid      = ( system.getInfo("platformName") == "Android" ) 
+_G.onWinPhone     = ( system.getInfo("platformName") == "WinPhone" )
+_G.onOSX          = ( system.getInfo("platformName") == "Mac OS X" )
+_G.onAppleTV      = ( system.getInfo("platformName") == "tvOS" )
+_G.onAndroidTV 	  = ( (system.getInfo("androidDisplayDensityName") == "tvdpi") or
+                      (tostring(system.getInfo("androidDisplayApproximateDpi")) == "213" ) ) 
+_G.onWin          = ( system.getInfo("platformName") == "Win" )
+_G.onNook         = ( system.getInfo("targetAppStore") == "nook" )
+_G.onAmazon       = ( system.getInfo("targetAppStore") == "amazon" or
+	                  ( string.find( system.getInfo("model"), "Fire" ) ~= nil ) )
+_G.onDesktop      = ( ( _G.onOSX or _G.onWin ) and not _G.onSimulator )
+_G.onDevice       = ( _G.onAndroid or _G.oniOS or _G.onAppleTVOS or _G.onAndroidTV  )
 
 
 -- =============================================================
 -- Device
 -- =============================================================
-_G.oniPad        = ( string.find( system.getInfo("architectureInfo"), "iPad" ) ~= nil )
-_G.oniPhone4     = ( string.find( system.getInfo("architectureInfo"), "iPhone4" ) ~= nil )
-_G.oniPhone5     = ( string.find( system.getInfo("architectureInfo"), "iPhone5" ) ~= nil )
-_G.oniPhone5s     = ( string.find( system.getInfo("architectureInfo"), "iPhone6" ) ~= nil )
-_G.oniPhone6     = ( string.find( system.getInfo("architectureInfo"), "iPhone7,2" ) ~= nil )
-_G.oniPhone6Plus = ( string.find( system.getInfo("architectureInfo"), "iPhone7,1" ) ~= nil )
-_G.onAndroidTablet = ( (system.getInfo( "androidDisplayWidthInInches" ) or 0) > 5 or
+_G.oniPad 			= ( string.find( system.getInfo("architectureInfo"), "iPad" ) ~= nil )
+_G.oniPhone4		= ( string.find( system.getInfo("architectureInfo"), "iPhone4" ) ~= nil )
+_G.oniPhone5 		= ( string.find( system.getInfo("architectureInfo"), "iPhone5" ) ~= nil )
+_G.oniPhone5s 		= ( string.find( system.getInfo("architectureInfo"), "iPhone6" ) ~= nil )
+_G.oniPhone6 		= ( string.find( system.getInfo("architectureInfo"), "iPhone7,2" ) ~= nil )
+_G.oniPhone6Plus 	= ( string.find( system.getInfo("architectureInfo"), "iPhone7,1" ) ~= nil )
+_G.onAndroidTablet 	= ( (system.getInfo( "androidDisplayWidthInInches" ) or 0) > 5 or
                         (system.getInfo( "androidDisplayHeightInInches" ) or 0) > 5 ) 
-_G.onTablet = onAndroidTablet or oniPad 
+_G.onTablet 		= _G.onAndroidTablet or _G.oniPad 
 
 -- =============================================================
 -- Easy Colors

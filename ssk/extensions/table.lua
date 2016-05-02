@@ -262,10 +262,8 @@ function table.secure_save( theTable, fileName, base )
       toWrite = security.encode( toWrite )
       fh:write(toWrite)
       io.close( fh )
-      math.randomseed( os.time() )
       return true
    end   
-   math.randomseed( os.time() )
    return false
 end
 
@@ -273,8 +271,6 @@ end
 --    table.secure_load( fileName [, base ] ) - Loads table from file (Uses JSON library as intermediary)
 -- ==
 function table.secure_load( fileName, base, keyString  )
-   seed = seed or 1
-   math.randomseed( seed )
    local security = ssk.security
    local base = base or system.DocumentsDirectory
    local path = system.pathForFile( fileName, base )
@@ -288,10 +284,8 @@ function table.secure_load( fileName, base, keyString  )
       io.close( fh )
       contents = security.decode( contents )
       local newTable = json.decode( contents )
-      math.randomseed( os.time() )
       return newTable
    else
-      math.randomseed( os.time() )
       return nil
    end
 end

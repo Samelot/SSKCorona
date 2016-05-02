@@ -36,8 +36,8 @@ util.mkFolder( path )
 util.mvFolder( src, dst )
 util.cpFolder( src, dst )
 
-util.saveTable( tbl, path )
-util.loadTable( path ) 
+util.saveTable( tbl, path, secure )
+util.loadTable( path, secure ) 
 
 
 Misc - Utilities

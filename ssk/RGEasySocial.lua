@@ -32,12 +32,12 @@ function easySocial.rate( id )
 		url = "market://details?id=" .. id
 	
 	elseif( oniOS ) then		
-		local osVer = tonumber(system.getInfo("platformVersion").sub(1, 1))
-		if( osVer < 7 ) then
+		--local osVer = tonumber(system.getInfo("platformVersion").sub(1, 1)) -- EFM
+		--if( osVer < 7 ) then
 			url = "itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=" .. id
-		else
+		--else
 			url = "itms-apps://itunes.apple.com/app/id" .. id .. "?onlyLatestVersion=false"
-		end
+		--end
 	end
 	if( not url ) then return end
 	system.openURL( url )
