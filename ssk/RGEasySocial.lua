@@ -34,10 +34,18 @@ function easySocial.rate( id )
 	elseif( oniOS ) then		
 		--local osVer = tonumber(system.getInfo("platformVersion").sub(1, 1)) -- EFM
 		--if( osVer < 7 ) then
-			url = "itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=" .. id
+			--url = "itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=" .. id
 		--else
 			url = "itms-apps://itunes.apple.com/app/id" .. id .. "?onlyLatestVersion=false"
 		--end
+	elseif( onAppleTV ) then		
+			url = "com.apple.TVAppStore://itunes.apple.com/app/id" .. id .. "?onlyLatestVersion=false"
+			--EFM or is it --> url = "com.apple.TVAppStore://itunes.apple.com/app/APPNAME/id" .. id .. "?onlyLatestVersion=false"
+			--EFM FAIL url = "com.apple.TVAppStore://itunes.apple.com/app/com.appsolutegames.apex"
+			url = "com.apple.TVAppStore://itunes.apple.com/app/apex/id186379058"
+			--com.appsolutegames.apex
+			--186379058
+			
 	end
 	if( not url ) then return end
 	system.openURL( url )
