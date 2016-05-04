@@ -208,10 +208,17 @@ end
 --
 -- saveTable( tbl, path ) -- Save a table to a fixed path.
 --
-function util.saveTable( tbl, path )
+function util.saveTable( tbl, path, secure )
+   local security = ssk.security
+   if(secure and security.getKeyString() == nil) then return false end
+
    local fh = io.open( path, "w" )
    if( fh ) then
-      fh:write(json.encode( tbl ))
+      local toWrite = json.encode( tbl )
+      if( secure) then
+         toWrite = security.encode( toWrite )
+      end
+      fh:write(toWrite)
       io.close( fh )
       return true    
    end
@@ -221,17 +228,22 @@ end
 --
 -- loadTable( path, base ) -- Load a table from a fixed path.
 --
-function util.loadTable( path )
+function util.loadTable( path, secure )
+   local security = ssk.security
    local fh = io.open( path, "r" )
    if( fh ) then
       local contents = fh:read( "*a" )
       io.close( fh )
+      if( secure ) then
+         contents = security.decode( contents )
+      end
       local newTable = json.decode( contents )
       return newTable
    else
       return nil
    end
 end
+
 
 
 -- =====================================================

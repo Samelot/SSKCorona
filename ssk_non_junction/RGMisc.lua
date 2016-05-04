@@ -34,6 +34,9 @@ function misc.noErrorAlerts()
 	Runtime:hideErrorAlerts( )
 end
 
+-- ==
+--		func() - what it does
+-- ==
 misc.isConnectedToWWW = function( url )
 	local url = url or "www.google.com" 
 	local hostFound = true

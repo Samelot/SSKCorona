@@ -245,6 +245,52 @@ function table.dumpu(theTable, padding, marker )
    print( marker .. "-----\n")
 end
 
+-- ==
+--    table.secure_save( theTable, fileName [, base ] ) - Saves table to file (Uses JSON library as intermediary)
+-- ==
+function table.secure_save( theTable, fileName, base )   
+   local security = ssk.security
+   local base = base or  system.DocumentsDirectory
+   local path = system.pathForFile( fileName, base )
+
+   --print(path)
+   if(security.getKeyString() == nil) then return false end
+   local fh = io.open( path, "w" )
+
+   if(fh) then
+      local toWrite = json.encode( theTable )
+      toWrite = security.encode( toWrite )
+      fh:write(toWrite)
+      io.close( fh )
+      return true
+   end   
+   return false
+end
+
+-- ==
+--    table.secure_load( fileName [, base ] ) - Loads table from file (Uses JSON library as intermediary)
+-- ==
+function table.secure_load( fileName, base, keyString  )
+   local security = ssk.security
+   local base = base or system.DocumentsDirectory
+   local path = system.pathForFile( fileName, base )
+
+   if(security.getKeyString() == nil) then return nil end
+   if(path == nil) then return nil end
+   local fh, reason = io.open( path, "r" )
+   
+   if( fh) then
+      local contents = fh:read( "*a" )
+      io.close( fh )
+      contents = security.decode( contents )
+      local newTable = json.decode( contents )
+      return newTable
+   else
+      return nil
+   end
+end
+
+
 function table.dump(theTable, padding, marker ) -- Sorted
    marker = marker or ""
    local theTable = theTable or  {}

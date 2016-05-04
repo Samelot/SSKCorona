@@ -59,12 +59,16 @@ local_require "ssk.RGSizer"
 
 local_require "ssk.RGEasyTextField"
 
+local_require "ssk.RGSecurity"
+
+local_require "ssk.RGEasySocial"
+
 local_require "ssk.tools.tools"
 
 --
-if(ssk.__enableExperimental) then 
+--if(ssk.__enableExperimental) then 
 	local_require "ssk.extras.lazyRequire" 
-end
+--end
 
 --
 -- External Libs/Modules (Written by others and used with credit.)
