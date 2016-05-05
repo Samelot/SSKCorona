@@ -28,7 +28,7 @@ Instead, there now a folder called 'samples/' containing simple standalone examp
 
 Folders
 ============
- * ssk/ - "Super Starter Kit" library.
+ * com.roaminggamer.ssk/ - "Super Starter Kit" library.
  * docs/ - The "SSK Users Guide" and cheat sheets.  (Currently being updated as of '07 AUG 2015' )
  * samples/  - Individual samples that show how to use parts of SSK.  Note: Copy SSK into the folders before running samples.
 
