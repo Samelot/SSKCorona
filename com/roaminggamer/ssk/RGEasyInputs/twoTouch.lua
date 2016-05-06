@@ -17,11 +17,41 @@
 ]]
 -- =============================================================
 local newRect           = ssk.display.rect
-local inputs
-local leftPressed 	= false
-local rightPressed 	= false
-local left
-local right
+local inputHelper
+
+local function destroy( self )
+	display.remove(inputHelper)
+	inputHelper = nil
+	leftPressed = false
+	rightPressed = false
+	left = nil
+	right = nil
+end
+
+local function destroy( self )
+	if( self.left and self.left.key ) then 
+		ignore("key", self.left)
+		self.left.key = nil
+	end
+	if( self.right and self.right.key ) then 
+		ignore("key", self.right)
+		self.right.key = nil
+	end
+	display.remove(self)
+end
+
+
+local function sleep( self )
+	self.sleeping = true
+end
+
+
+local function wake( self )
+	self.sleeping = false
+end
+
+
+
 
 local function create( group, params )
 	group 	= group or display.currentStage
@@ -35,10 +65,12 @@ local function create( group, params )
 	local alpha 			= params.alpha or debugEn and 0.25 or 0
 	local leftEventName 	= params.leftEventName or "onTwoTouchLeft"
 	local rightEventName 	= params.rightEventName or "onTwoTouchRight"
-	local keyboardEn			= fnn(params.keyboardEn, false)	
+	local keyboardEn		= fnn(params.keyboardEn, false)	
 
 	local function onTouch( self, event )
 		local phase = event.phase
+
+		if( self.parent.sleeping ) then return false end
 
 		if( phase == "began" ) then
 			self.isFocus = true
@@ -64,113 +96,79 @@ local function create( group, params )
 		return false
 	end
 
-	inputs = display.newGroup()
-	group:insert(inputs)
+	inputHelper = display.newGroup()
+	group:insert(inputHelper)
 
-	left = newRect( inputs, centerX - fullw/4, centerY,
+	inputHelper.left = newRect( inputHelper, centerX - fullw/4, centerY,
 		{ w = fullw/2, h =  fullh, fill = leftFill, alpha = alpha, 
 		  myEventName = leftEventName, touch = onTouch, myFill = leftFill, isHitTestable = true })
 
-	right = newRect( inputs, centerX + fullw/4, centerY,
+	inputHelper.right = newRect( inputHelper, centerX + fullw/4, centerY,
 		{ w = fullw/2, h = fullh, fill = rightFill, alpha = alpha, 
 		  myEventName = rightEventName, touch = onTouch, myFill = rightFill, isHitTestable = true })
 
 	--left:addEventListener( "touch" )
 	--right:addEventListener( "touch" )
 
-	if(keyboardEn == true) then
-		left.ON_KEY = function( self, event )			
+	if(keyboardEn == true ) then		
+		inputHelper.left.key = function( self, event )			
+			if( inputHelper.sleeping ) then return false end
 			--if(not self or self.removeSelf == nil) then
-			if(event.keyName == "a" or event.keyName == "left") then
+			if( event.keyName == "a" or event.keyName == "left" ) then
 				local newEvent = table.deepCopy( event )
 				if(event.phase == "down") then
 					newEvent.phase = "began"
 					newEvent.name = nil
-					if( debugEn ) then left:setFillColor( unpack( _W_ ) ) end
+					if( debugEn ) then self:setFillColor( unpack( _W_ ) ) end
 					leftPressed = true
 					post( leftEventName, newEvent )
 				elseif(event.phase == "up") then
 					newEvent.phase = "ended"
 					newEvent.name = nil
-					if( debugEn ) then left:setFillColor( unpack( left.myFill ) ) end
+					if( debugEn ) then self:setFillColor( unpack( self.myFill ) ) end
 					leftPressed = false
 					post( leftEventName, newEvent )
 				end
 			end
 		end
-		listen("ON_KEY", left)
+		listen("key", inputHelper.left)
 	end
 
-	left.finalize = function( self )		
-		if( self.ON_KEY ) then
-			ignore( "ON_KEY", self )
-			self.ON_KEY = nil
-		end
-		inputs = nil
-		leftPressed = false
-		left = nil
-	end; left:addEventListener("finalize")
 
-	if(keyboardEn == true) then
-		right.ON_KEY = function( self, event )			
+	inputHelper.finalize = function( self )
+		if( self.destroy ) then
+			self:destroy()
+		end
+	end; inputHelper:addEventListener("finalize")
+
+	if(keyboardEn == true ) then
+		inputHelper.right.key = function( self, event )			
 			--if(not self or self.removeSelf == nil) then
-			if(event.keyName == "d" or event.keyName == "right") then				
+			if( event.keyName == "d" or event.keyName == "right" ) then
 				local newEvent = table.deepCopy( event )
 				if(event.phase == "down") then
 					newEvent.phase = "began"
 					newEvent.name = nil
-					if( debugEn ) then right:setFillColor( unpack( _W_ ) ) end
+					if( debugEn ) then self:setFillColor( unpack( _W_ ) ) end
 					rightPressed = true
 					post( rightEventName, newEvent )
 				elseif(event.phase == "up") then
 					newEvent.phase = "ended"
 					newEvent.name = nil
 					rightPressed = false
-					if( debugEn ) then right:setFillColor( unpack( right.myFill ) ) end
+					if( debugEn ) then self:setFillColor( unpack( self.myFill ) ) end
 					post( rightEventName, newEvent )
 				end
 			end
 		end
-		listen("ON_KEY", right)
+		listen("key", inputHelper.right)
 	end
 
-	right.finalize = function( self )
-		if( self.ON_KEY ) then
-			ignore( "ON_KEY", self )
-			self.ON_KEY = nil
-		end
-		inputs = nil
-		rightPressed = false
-		right = nil
-	end; right:addEventListener("finalize")	
-end
 
-local function destroy()
-	display.remove(inputs)
-	inputs = nil
-	leftPressed = false
-	rightPressed = false
-	left = nil
-	right = nil
-end
-
-local function getPressed()
-	return leftPressed, rightPressed
-end
-
-local function reset()
-	leftPressed = false
-	rightPressed = false
-	left.isFocus = false
-	right.isFocus = false
-	display.currentStage:setFocus( left, nil )
-	display.currentStage:setFocus( right, nil )
+	return inputHelper
 end
 
 
 local public = {}
-public.reset 		= reset
-public.getPressed 	= getPressed
 public.create 		= create
-public.destroy 		= destroy
 return public

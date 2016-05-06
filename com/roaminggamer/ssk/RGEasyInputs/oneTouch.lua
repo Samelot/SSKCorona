@@ -18,8 +18,28 @@
 -- =============================================================
 
 local newRect   = ssk.display.rect
-local inputs
-local pressed 	= false
+
+
+local function destroy( self )
+	if( self.key ) then 
+		ignore("key", self)
+		self.key = nil
+	end
+	display.remove(self)
+end
+
+local function sleep( self )
+	self.proxy.sleeping = true
+end
+
+
+local function wake( self )
+	self.proxy.sleeping = false
+end
+
+local function getPressed( self )
+	return self.proxy.pressed
+end
 
 local function create( group, params )
 	group 	= group or display.currentStage
@@ -30,9 +50,12 @@ local function create( group, params )
 	local alpha 		= params.alpha or debugEn and 0.25 or 0
 	local eventName 	= params.eventName or "onOneTouch"
 	local keyboardEn	= fnn(params.keyboardEn, false)	
+	local appleTVEn		= fnn(params.appleTVEn, false)	
 	
 	local function onTouch( self, event )
 		local phase = event.phase
+
+		if( self.sleeping ) then return false end
 
 		if( phase == "began" ) then
 			self.isFocus = true
@@ -56,53 +79,69 @@ local function create( group, params )
 		return false
 	end
 
-	inputs = display.newGroup()
-	group:insert(inputs)
+	local inputHelper = display.newGroup()
+	group:insert(inputHelper)
 
-	local tmp = newRect( inputs, centerX, centerY,
+	local tmp = newRect( inputHelper, centerX, centerY,
 		{ w = fullw, h = fullh, fill = fill, alpha = alpha, touch = onTouch, isHitTestable = true })
+
+	inputHelper.proxy = tmp
 
 	--tmp:addEventListener( "touch" )
 
-	if(keyboardEn == true) then
-		tmp.ON_KEY = function( self, event )			
+	if(keyboardEn == true or appleTVEn == true ) then
+		tmp.key = function( self, event )
+			table.dump(event)
+
+			if( self.sleeping ) then return false end
+
 			if(not self or self.removeSelf == nil) then
-				ignore("ON_KEY", self)
+				ignore("key", self)
 				return
 			end
-			if(event.keyName == "w" or event.keyName == "up") then
+			if( keyboardEn and ( event.keyName == "w" or event.keyName == "up" ) ) then
 				local newEvent = table.deepCopy( event )
 				if(event.phase == "down") then
 					newEvent.phase = "began"
 					newEvent.name = nil
 					if( debugEn ) then self:setFillColor( unpack( _W_ ) ) end
-					pressed = true
+					self.pressed = true
 					post( eventName, newEvent )
 				elseif(event.phase == "up") then
 					newEvent.phase = "ended"
 					newEvent.name = nil
 					if( debugEn ) then self:setFillColor( unpack( fill ) ) end
-					pressed	= false
+					self.pressed	= false
 					post( eventName, newEvent )
 				end			
 			end
+			if( appleTVEn and ( event.keyName == "buttonZ" ) ) then
+				local newEvent = table.deepCopy( event )
+				if(event.phase == "down") then
+					newEvent.phase = "began"
+					newEvent.name = nil
+					if( debugEn ) then self:setFillColor( unpack( _W_ ) ) end
+					self.pressed = true
+					post( eventName, newEvent )
+					timer.performWithDelay( 100, function() self:setFillColor( unpack( fill ) ) end )
+				end			
+			end
 		end
-		listen("ON_KEY", tmp)
+		listen("key", tmp)
 	end	
+
+	inputHelper.sleeping 	= false
+	inputHelper.pressed  	= false
+
+	inputHelper.destroy = destroy
+	inputHelper.wake = wake
+	inputHelper.sleep = sleep
+	inputHelper.getPressed = getPressed
+
+	return inputHelper
 end
 
-local function destroy()
-	display.remove(inputs)
-	inputs = nil
-	pressed	= false
-end
-
-local function getPressed()
-	return pressed
-end
 
 local public = {}
-public.getPressed 	= getPressed
 public.create 		= create
-public.destroy 		= destroy
 return public
